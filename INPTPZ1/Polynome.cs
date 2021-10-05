@@ -17,9 +17,14 @@ namespace INPTPZ1
                 Coefficients = new List<ComplexNumber>();
             }
 
-            public void Add(ComplexNumber coe)
+            public Polynome(List<ComplexNumber> coefficients)
             {
-                Coefficients.Add(coe);
+                Coefficients = coefficients;
+            }
+
+            public void Add(ComplexNumber coefficient)
+            {
+                Coefficients.Add(coefficient);
             }
 
             /// <summary>

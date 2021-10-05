@@ -13,63 +13,57 @@ namespace INPTPZ1
     {
         static void Main(string[] args)
         {
-            int[] intargs = new int[2];
-            for (int i = 0; i < intargs.Length; i++)
+            int[] imageDimensions = new int[2];
+            for (int i = 0; i < imageDimensions.Length; i++)
             {
-                intargs[i] = int.Parse(args[i]);
+                imageDimensions[i] = int.Parse(args[i]);
             }
-            double[] doubleargs = new double[4];
-            for (int i = 0; i < doubleargs.Length; i++)
+            double[] boundaryCoordinates = new double[4];
+            for (int i = 0; i < boundaryCoordinates.Length; i++)
             {
-                doubleargs[i] = double.Parse(args[i + 2]);
+                boundaryCoordinates[i] = double.Parse(args[i + 2]);
             }
-            string output = args[6];
+            string outputPath = args[6];
             // TODO: add parameters from args?
-            Bitmap bmp = new Bitmap(intargs[0], intargs[1]);
-            double xmin = doubleargs[0];
-            double xmax = doubleargs[1];
-            double ymin = doubleargs[2];
-            double ymax = doubleargs[3];
+            Bitmap bitmap = new Bitmap(imageDimensions[0], imageDimensions[1]);
+            double xmin = boundaryCoordinates[0];
+            double xmax = boundaryCoordinates[1];
+            double ymin = boundaryCoordinates[2];
+            double ymax = boundaryCoordinates[3];
 
-            double xstep = (xmax - xmin) / intargs[0];
-            double ystep = (ymax - ymin) / intargs[1];
+            double xstep = (xmax - xmin) / imageDimensions[0];
+            double ystep = (ymax - ymin) / imageDimensions[1];
 
-            List<ComplexNumber> koreny = new List<ComplexNumber>();
+            List<ComplexNumber> roots = new List<ComplexNumber>();
             // TODO: poly should be parameterised?
-            Polynome p = new Polynome();
-            Polynome pd = CreatePolynome(p);
+            Polynome polynome = new Polynome();
+            Polynome derivedPolynome = CreatePolynome(polynome);
 
-            Console.WriteLine(p);
-            Console.WriteLine(pd);
+            Console.WriteLine(polynome);
+            Console.WriteLine(derivedPolynome);
 
-            var clrs = new Color[]
+            var colors = new Color[]
             {
                 Color.Red, Color.Blue, Color.Green, Color.Yellow, Color.Orange, Color.Fuchsia, Color.Gold, Color.Cyan, Color.Magenta
             };
 
             var maxid = 0;
 
-            // TODO: cleanup!!!
-            // for every pixel in image...
-            for (int i = 0; i < intargs[0]; i++)
+            for (int i = 0; i < imageDimensions[0]; i++)
             {
-                for (int j = 0; j < intargs[1]; j++)
+                for (int j = 0; j < imageDimensions[1]; j++)
                 {
-                    // find "world" coordinates of pixel
-                    ComplexNumber ox = GetPointInWorldCoordinates(xmin, ymin, xstep, ystep, i, j);
+                    ComplexNumber pixelWorldCoordinates = GetPointInWorldCoordinates(xmin, ymin, xstep, ystep, i, j);
 
-                    // find solution of equation using newton's iteration
-                    float it = FindSolutionsUsingNewtonIterationMethod(p, pd, ref ox);
+                    float iteration = FindSolutionsUsingNewtonIterationMethod(polynome, derivedPolynome, ref pixelWorldCoordinates);
 
-                    // find solution root number
-                    int id = FindRootIndex(koreny, ref maxid, ox);
+                    int rootIndex = FindRootIndex(roots, ref maxid, pixelWorldCoordinates);
 
-                    // colorize pixel according to root number
-                    ColorizePixel(bmp, clrs, i, j, it, id);
+                    ColorizePixel(bitmap, colors, i, j, iteration, rootIndex);
                 }
             }
 
-            bmp.Save(output ?? "../../../out.png");
+            bitmap.Save(outputPath ?? "../../../out.png");
         }
 
         private static Polynome CreatePolynome(Polynome p)
@@ -77,11 +71,9 @@ namespace INPTPZ1
             p.Coefficients.Add(new ComplexNumber() { Re = 1 });
             p.Coefficients.Add(ComplexNumber.Zero);
             p.Coefficients.Add(ComplexNumber.Zero);
-            //p.Coe.Add(Cplx.Zero);
             p.Coefficients.Add(new ComplexNumber() { Re = 1 });
-            Polynome ptmp = p;
-            Polynome pd = p.Derive();
-            return pd;
+
+            return p.Derive();
         }
 
         private static void ColorizePixel(Bitmap bmp, Color[] clrs, int i, int j, float it, int id)
