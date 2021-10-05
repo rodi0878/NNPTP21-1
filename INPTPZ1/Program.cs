@@ -76,55 +76,54 @@ namespace INPTPZ1
             return p.Derive();
         }
 
-        private static void ColorizePixel(Bitmap bmp, Color[] clrs, int i, int j, float it, int id)
+        private static void ColorizePixel(Bitmap bitmap, Color[] colors, int i, int j, float iteration, int rootIndex)
         {
-            var color = clrs[id % clrs.Length];
+            var color = colors[rootIndex % colors.Length];
             color = Color.FromArgb(
-              Math.Min(Math.Max(0, color.R - (int)it * 2), 255),
-              Math.Min(Math.Max(0, color.G - (int)it * 2), 255),
-              Math.Min(Math.Max(0, color.B - (int)it * 2), 255));
-            bmp.SetPixel(j, i, color);
+              Math.Min(Math.Max(0, color.R - (int)iteration * 2), 255),
+              Math.Min(Math.Max(0, color.G - (int)iteration * 2), 255),
+              Math.Min(Math.Max(0, color.B - (int)iteration * 2), 255));
+            bitmap.SetPixel(j, i, color);
         }
 
-        private static int FindRootIndex(List<ComplexNumber> koreny, ref int maxid, ComplexNumber ox)
+        private static int FindRootIndex(List<ComplexNumber> roots, ref int maxid, ComplexNumber pixelWorldCoordinates)
         {
-            var known = false;
+            var isRootIndexKnown = false;
             var id = 0;
-            for (int w = 0; w < koreny.Count; w++)
+            for (int i = 0; i < roots.Count; i++)
             {
-                if (Math.Pow(ox.Re - koreny[w].Re, 2) + Math.Pow(ox.Im - koreny[w].Im, 2) <= 0.01)
+                if (Math.Pow(pixelWorldCoordinates.Re - roots[i].Re, 2) + Math.Pow(pixelWorldCoordinates.Im - roots[i].Im, 2) <= 0.01)
                 {
-                    known = true;
-                    id = w;
+                    isRootIndexKnown = true;
+                    id = i;
                 }
             }
-            if (!known)
+            if (!isRootIndexKnown)
             {
-                koreny.Add(ox);
-                id = koreny.Count;
+                roots.Add(pixelWorldCoordinates);
+                id = roots.Count;
                 maxid = id + 1;
             }
 
             return id;
         }
 
-        private static float FindSolutionsUsingNewtonIterationMethod(Polynome p, Polynome pd, ref ComplexNumber ox)
+        private static float FindSolutionsUsingNewtonIterationMethod(Polynome polynome, Polynome derivedPolynome, ref ComplexNumber pixelWorldCoordinates)
         {
-            float it = 0;
-            for (int q = 0; q < 30; q++)
+            float iteration = 0;
+            for (int i = 0; i < 30; i++)
             {
-                var diff = p.Eval(ox).Divide(pd.Eval(ox));
-                ox = ox.Subtract(diff);
+                var diff = polynome.Eval(pixelWorldCoordinates).Divide(derivedPolynome.Eval(pixelWorldCoordinates));
+                pixelWorldCoordinates = pixelWorldCoordinates.Subtract(diff);
 
-                //Console.WriteLine($"{q} {ox} -({diff})");
                 if (Math.Pow(diff.Re, 2) + Math.Pow(diff.Im, 2) >= 0.5)
                 {
-                    q--;
+                    i--;
                 }
-                it++;
+                iteration++;
             }
 
-            return it;
+            return iteration;
         }
 
         private static ComplexNumber GetPointInWorldCoordinates(double xmin, double ymin, double xstep, double ystep, int i, int j)
@@ -132,17 +131,17 @@ namespace INPTPZ1
             double y = ymin + i * ystep;
             double x = xmin + j * xstep;
 
-            ComplexNumber ox = new ComplexNumber()
+            ComplexNumber pixelWorldCoordinates = new ComplexNumber()
             {
                 Re = x,
                 Im = (float)(y)
             };
 
-            if (ox.Re == 0)
-                ox.Re = 0.0001;
-            if (ox.Im == 0)
-                ox.Im = 0.0001f;
-            return ox;
+            if (pixelWorldCoordinates.Re == 0)
+                pixelWorldCoordinates.Re = 0.0001;
+            if (pixelWorldCoordinates.Im == 0)
+                pixelWorldCoordinates.Im = 0.0001f;
+            return pixelWorldCoordinates;
         }
     }
 }

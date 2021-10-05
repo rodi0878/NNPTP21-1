@@ -7,9 +7,6 @@ namespace INPTPZ1
     {
         public class Polynome
         {
-            /// <summary>
-            /// Coefficients
-            /// </summary>
             public List<ComplexNumber> Coefficients { get; set; }
 
             public Polynome()
@@ -22,15 +19,11 @@ namespace INPTPZ1
                 Coefficients = coefficients;
             }
 
-            public void Add(ComplexNumber coefficient)
+            public void AddCoefficient(ComplexNumber coefficient)
             {
                 Coefficients.Add(coefficient);
             }
 
-            /// <summary>
-            /// Derives this polynomial and creates new one
-            /// </summary>
-            /// <returns>Derivated polynomial</returns>
             public Polynome Derive()
             {
                 Polynome result = new Polynome();
@@ -45,56 +38,50 @@ namespace INPTPZ1
             /// <summary>
             /// Evaluates polynomial at given point
             /// </summary>
-            /// <param name="x">point of evaluation</param>
+            /// <param name="realNumber">point of evaluation</param>
             /// <returns>y</returns>
-            public ComplexNumber Eval(double x)
+            public ComplexNumber Eval(double realNumber)
             {
-                return Eval(new ComplexNumber() { Re = x, Im = 0 });
+                return Eval(new ComplexNumber() { Re = realNumber, Im = 0 });
             }
 
             /// <summary>
             /// Evaluates polynomial at given point
             /// </summary>
-            /// <param name="x">point of evaluation</param>
+            /// <param name="complexNumber">point of evaluation</param>
             /// <returns>y</returns>
-            public ComplexNumber Eval(ComplexNumber x)
+            public ComplexNumber Eval(ComplexNumber complexNumber)
             {
-                ComplexNumber s = ComplexNumber.Zero;
+                ComplexNumber resultComplexNumber = ComplexNumber.Zero;
                 for (int i = 0; i < Coefficients.Count; i++)
                 {
-                    ComplexNumber coef = Coefficients[i];
-                    ComplexNumber bx = x;
-                    int power = i;
+                    ComplexNumber coefficient = Coefficients[i];
+                    ComplexNumber multiplier = complexNumber;
 
                     if (i > 0)
                     {
-                        for (int j = 0; j < power - 1; j++)
-                            bx = bx.Multiply(x);
+                        for (int j = 0; j < i - 1; j++)
+                            multiplier = multiplier.Multiply(complexNumber);
 
-                        coef = coef.Multiply(bx);
+                        coefficient = coefficient.Multiply(multiplier);
                     }
 
-                    s = s.Add(coef);
+                    resultComplexNumber = resultComplexNumber.Add(coefficient);
                 }
 
-                return s;
+                return resultComplexNumber;
             }
 
-            /// <summary>
-            /// ToString
-            /// </summary>
-            /// <returns>String repr of polynomial</returns>
+
             public override string ToString()
             {
                 string s = "";
-                int i = 0;
-                for (; i < Coefficients.Count; i++)
+                for (int i = 0; i < Coefficients.Count; i++)
                 {
                     s += Coefficients[i];
                     if (i > 0)
                     {
-                        int j = 0;
-                        for (; j < i; j++)
+                        for (int j = 0; j < i; j++)
                         {
                             s += "x";
                         }
