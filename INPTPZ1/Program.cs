@@ -36,14 +36,8 @@ namespace INPTPZ1
 
             List<ComplexNumber> koreny = new List<ComplexNumber>();
             // TODO: poly should be parameterised?
-            Polynome p = new Polynome();
-            p.Coefficients.Add(new ComplexNumber() { Re = 1 });
-            p.Coefficients.Add(ComplexNumber.Zero);
-            p.Coefficients.Add(ComplexNumber.Zero);
-            //p.Coe.Add(Cplx.Zero);
-            p.Coefficients.Add(new ComplexNumber() { Re = 1 });
-            Polynome ptmp = p;
-            Polynome pd = p.Derive();
+            Polynome p, pd;
+            CreatePolynome(out p, out pd);
 
             Console.WriteLine(p);
             Console.WriteLine(pd);
@@ -67,6 +61,18 @@ namespace INPTPZ1
             }
 
             bmp.Save(output ?? "../../../out.png");
+        }
+
+        private static void CreatePolynome(out Polynome p, out Polynome pd)
+        {
+            p = new Polynome();
+            p.Coefficients.Add(new ComplexNumber() { Re = 1 });
+            p.Coefficients.Add(ComplexNumber.Zero);
+            p.Coefficients.Add(ComplexNumber.Zero);
+            //p.Coe.Add(Cplx.Zero);
+            p.Coefficients.Add(new ComplexNumber() { Re = 1 });
+            Polynome ptmp = p;
+            pd = p.Derive();
         }
 
         private static void ColorizePixel(Bitmap bmp, Color[] clrs, int i, int j, float iterations, int index)
