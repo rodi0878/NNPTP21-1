@@ -11,6 +11,13 @@ namespace INPTPZ1
     /// </summary>
     class Program
     {
+        private static readonly int ImageWidthIndex = 0;
+        private static readonly int ImageHeightIndex = 1;
+        private static readonly int XMinIndex = 0;
+        private static readonly int XMaxIndex = 1;        
+        private static readonly int YMinIndex = 2;
+        private static readonly int YMaxIndex = 3;
+        private static readonly int OutputPathIndex = 6;
         static void Main(string[] args)
         {
             int[] imageDimensions = new int[2];
@@ -23,18 +30,17 @@ namespace INPTPZ1
             {
                 boundaryCoordinates[i] = double.Parse(args[i + 2]);
             }
-            string outputPath = args[6];
+            string outputPath = args[OutputPathIndex];
             // TODO: add parameters from args?
-            Bitmap bitmap = new Bitmap(imageDimensions[0], imageDimensions[1]);
-            double xmin = boundaryCoordinates[0];
-            double xmax = boundaryCoordinates[1];
-            double ymin = boundaryCoordinates[2];
-            double ymax = boundaryCoordinates[3];
+            Bitmap bitmap = new Bitmap(imageDimensions[ImageWidthIndex], imageDimensions[ImageHeightIndex]);
+            double xmin = boundaryCoordinates[XMinIndex];
+            double xmax = boundaryCoordinates[XMaxIndex];
+            double ymin = boundaryCoordinates[YMinIndex];
+            double ymax = boundaryCoordinates[YMaxIndex];
 
-            double xstep = (xmax - xmin) / imageDimensions[0];
-            double ystep = (ymax - ymin) / imageDimensions[1];
+            double xstep = (xmax - xmin) / imageDimensions[ImageWidthIndex];
+            double ystep = (ymax - ymin) / imageDimensions[ImageHeightIndex];
 
-            List<ComplexNumber> roots = new List<ComplexNumber>();
             // TODO: poly should be parameterised?
             Polynome polynome = new Polynome();
             Polynome derivedPolynome = CreatePolynome(polynome);
@@ -44,20 +50,28 @@ namespace INPTPZ1
 
             var colors = new Color[]
             {
-                Color.Red, Color.Blue, Color.Green, Color.Yellow, Color.Orange, Color.Fuchsia, Color.Gold, Color.Cyan, Color.Magenta
+                Color.Red, 
+                Color.Blue, 
+                Color.Green, 
+                Color.Yellow, 
+                Color.Orange, 
+                Color.Fuchsia, 
+                Color.Gold, 
+                Color.Cyan, 
+                Color.Magenta
             };
 
-            var maxid = 0;
+            List<ComplexNumber> roots = new List<ComplexNumber>();
 
-            for (int i = 0; i < imageDimensions[0]; i++)
+            for (int i = 0; i < imageDimensions[ImageWidthIndex]; i++)
             {
-                for (int j = 0; j < imageDimensions[1]; j++)
+                for (int j = 0; j < imageDimensions[ImageHeightIndex]; j++)
                 {
                     ComplexNumber pixelWorldCoordinates = GetPointInWorldCoordinates(xmin, ymin, xstep, ystep, i, j);
 
                     float iteration = FindSolutionsUsingNewtonIterationMethod(polynome, derivedPolynome, ref pixelWorldCoordinates);
 
-                    int rootIndex = FindRootIndex(roots, ref maxid, pixelWorldCoordinates);
+                    int rootIndex = FindRootIndex(roots, pixelWorldCoordinates);
 
                     ColorizePixel(bitmap, colors, i, j, iteration, rootIndex);
                 }
@@ -76,17 +90,17 @@ namespace INPTPZ1
             return p.Derive();
         }
 
-        private static void ColorizePixel(Bitmap bitmap, Color[] colors, int i, int j, float iteration, int rootIndex)
+        private static void ColorizePixel(Bitmap bitmap, Color[] colors, int x, int y, float iteration, int rootIndex)
         {
             var color = colors[rootIndex % colors.Length];
             color = Color.FromArgb(
               Math.Min(Math.Max(0, color.R - (int)iteration * 2), 255),
               Math.Min(Math.Max(0, color.G - (int)iteration * 2), 255),
               Math.Min(Math.Max(0, color.B - (int)iteration * 2), 255));
-            bitmap.SetPixel(j, i, color);
+            bitmap.SetPixel(y, x, color);
         }
 
-        private static int FindRootIndex(List<ComplexNumber> roots, ref int maxid, ComplexNumber pixelWorldCoordinates)
+        private static int FindRootIndex(List<ComplexNumber> roots, ComplexNumber pixelWorldCoordinates)
         {
             var isRootIndexKnown = false;
             var id = 0;
@@ -102,7 +116,6 @@ namespace INPTPZ1
             {
                 roots.Add(pixelWorldCoordinates);
                 id = roots.Count;
-                maxid = id + 1;
             }
 
             return id;
@@ -134,7 +147,7 @@ namespace INPTPZ1
             ComplexNumber pixelWorldCoordinates = new ComplexNumber()
             {
                 Re = x,
-                Im = (float)(y)
+                Im = y
             };
 
             if (pixelWorldCoordinates.Re == 0)

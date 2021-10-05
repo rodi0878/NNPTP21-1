@@ -43,49 +43,42 @@ namespace INPTPZ1
                 return Math.Atan(Im / Re);
             }
 
-            public ComplexNumber Add(ComplexNumber b)
+            public ComplexNumber Add(ComplexNumber otherNumber)
             {
-                ComplexNumber a = this;
                 return new ComplexNumber()
                 {
-                    Re = a.Re + b.Re,
-                    Im = a.Im + b.Im
+                    Re = Re + otherNumber.Re,
+                    Im = Im + otherNumber.Im
                 };
             }
 
-            public ComplexNumber Subtract(ComplexNumber b)
+            public ComplexNumber Subtract(ComplexNumber otherNumber)
             {
-                ComplexNumber a = this;
                 return new ComplexNumber()
                 {
-                    Re = a.Re - b.Re,
-                    Im = a.Im - b.Im
+                    Re = Re - otherNumber.Re,
+                    Im = Im - otherNumber.Im
                 };
             }
 
-            public ComplexNumber Multiply(ComplexNumber b)
+            public ComplexNumber Multiply(ComplexNumber otherNumber)
             {
-                ComplexNumber a = this;
-                // aRe*bRe + aRe*bIm*i + aIm*bRe*i + aIm*bIm*i*i
                 return new ComplexNumber()
                 {
-                    Re = a.Re * b.Re - a.Im * b.Im,
-                    Im = (float)(a.Re * b.Im + a.Im * b.Re)
+                    Re = Re * otherNumber.Re - Im * otherNumber.Im,
+                    Im = Re * otherNumber.Im + Im * otherNumber.Re
                 };
             }
 
-            public ComplexNumber Divide(ComplexNumber b)
+            public ComplexNumber Divide(ComplexNumber otherNumber)
             {
-                // (aRe + aIm*i) / (bRe + bIm*i)
-                // ((aRe + aIm*i) * (bRe - bIm*i)) / ((bRe + bIm*i) * (bRe - bIm*i))
-                //  bRe*bRe - bIm*bIm*i*i
-                var dividend = Multiply(new ComplexNumber() { Re = b.Re, Im = -b.Im });
-                var divisor = b.Re * b.Re + b.Im * b.Im;
+                var dividend = Multiply(new ComplexNumber() { Re = otherNumber.Re, Im = -otherNumber.Im });
+                var divisor = otherNumber.Re * otherNumber.Re + otherNumber.Im * otherNumber.Im;
 
                 return new ComplexNumber()
                 {
                     Re = dividend.Re / divisor,
-                    Im = (float)(dividend.Im / divisor)
+                    Im = dividend.Im / divisor
                 };
             }
 
