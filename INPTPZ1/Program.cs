@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
 using INPTPZ1.Fractal;
-using INPTPZ1.Mathematics;
 
 namespace INPTPZ1
 {
@@ -14,44 +12,31 @@ namespace INPTPZ1
     {
         private static readonly int ImageWidthIndex = 0;
         private static readonly int ImageHeightIndex = 1;
-        private static readonly int XMinIndex = 0;
-        private static readonly int XMaxIndex = 1;        
-        private static readonly int YMinIndex = 2;
-        private static readonly int YMaxIndex = 3;
+        private static readonly int XMinIndex = 2;
+        private static readonly int XMaxIndex = 3;        
+        private static readonly int YMinIndex = 4;
+        private static readonly int YMaxIndex = 5;
         private static readonly int OutputPathIndex = 6;
         static void Main(string[] args)
         {
-            int[] imageDimensions = new int[2];
-            for (int i = 0; i < imageDimensions.Length; i++)
+            try
             {
-                imageDimensions[i] = int.Parse(args[i]);
+                NewtonFractal fractal = new NewtonFractal()
+                {
+                    ImageDimensions = new Dimension2D(int.Parse(args[ImageWidthIndex]), int.Parse(args[ImageHeightIndex])),
+                    MinCoordinates = new Point2D(double.Parse(args[XMinIndex]), double.Parse(args[YMinIndex])),
+                    MaxCoordinates = new Point2D(double.Parse(args[XMaxIndex]), double.Parse(args[YMaxIndex]))
+                };
+
+                Bitmap bitmap = fractal.GenerateNewtonFractalImage();
+
+                string outputPath = args[OutputPathIndex];
+                bitmap.Save(outputPath ?? "../../../out.png");
             }
-            double[] boundaryCoordinates = new double[4];
-            for (int i = 0; i < boundaryCoordinates.Length; i++)
+            catch (Exception e)
             {
-                boundaryCoordinates[i] = double.Parse(args[i + 2]);
+                Console.WriteLine(e);
             }
-            string outputPath = args[OutputPathIndex];
-            // TODO: add parameters from args?
-            double xmin = boundaryCoordinates[XMinIndex];
-            double xmax = boundaryCoordinates[XMaxIndex];
-            double ymin = boundaryCoordinates[YMinIndex];
-            double ymax = boundaryCoordinates[YMaxIndex];
-
-            NewtonFractal fractal = new NewtonFractal()
-            {
-                ImageDimensions = new Dimension2D(imageDimensions[ImageWidthIndex], imageDimensions[ImageHeightIndex]),
-                MinCoordinates = new Point2D(xmin, ymin),
-                MaxCoordinates = new Point2D(xmax, ymax)
-            };
-
-            Bitmap bitmap = fractal.GenerateNewtonFractalImage();
-
-            //// TODO: poly should be parameterised?
-            //Polynome polynome = new Polynome();
-            //Polynome derivedPolynome = CreatePolynome(polynome);
-
-            bitmap.Save(outputPath ?? "../../../out.png");
         }
     }
 }

@@ -2,9 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace INPTPZ1.Fractal
 {
@@ -17,10 +14,16 @@ namespace INPTPZ1.Fractal
 
         public Bitmap GenerateNewtonFractalImage()
         {
+            //// TODO: poly should be parameterised?
+            //Polynome polynome = new Polynome();
+            //Polynome derivedPolynome = CreatePolynome(polynome);
             Polynome polynome = new Polynome();
             Polynome derivedPolynome = CreatePolynome(polynome);
 
             Bitmap bitmap = new Bitmap(ImageDimensions.Width, ImageDimensions.Height);
+
+            Console.WriteLine(polynome);
+            Console.WriteLine(derivedPolynome);
 
             var colors = new Color[]
 {
@@ -57,14 +60,14 @@ namespace INPTPZ1.Fractal
             return bitmap;
         }
 
-        private Polynome CreatePolynome(Polynome p)
+        private Polynome CreatePolynome(Polynome polynome)
         {
-            p.Coefficients.Add(new ComplexNumber() { Re = 1 });
-            p.Coefficients.Add(ComplexNumber.Zero);
-            p.Coefficients.Add(ComplexNumber.Zero);
-            p.Coefficients.Add(new ComplexNumber() { Re = 1 });
+            polynome.Coefficients.Add(new ComplexNumber() { Re = 1 });
+            polynome.Coefficients.Add(ComplexNumber.Zero);
+            polynome.Coefficients.Add(ComplexNumber.Zero);
+            polynome.Coefficients.Add(new ComplexNumber() { Re = 1 });
 
-            return p.Derive();
+            return polynome.Derive();
         }
 
         private void ColorizePixel(Bitmap bitmap, Color[] colors, int x, int y, float iteration, int rootIndex)
