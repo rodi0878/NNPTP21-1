@@ -7,6 +7,17 @@ namespace INPTPZ1.Fractal
 {
     public class NewtonFractal
     {
+        private readonly int IterationMultiplier = 2;
+        private readonly int MaxColorValue = 255;
+        private readonly int MinColorValue = 0;
+        private readonly int SquareExponent = 2;
+        private readonly double DeterminantThreshold = 0.01;
+        private readonly double IterationMaximumThreshold = 0.5;
+        private readonly double NumberZeroValue = 0;
+        private readonly double NumberMinimalValue = 0.0001;
+        private readonly int InitialRealNumberValue = 1;
+        private readonly int MaximumNumberOfIterations = 30;
+
         public Dimension2D ImageDimensions { get; set; }
         public Point2D MinCoordinates { get; set; }
         public Point2D MaxCoordinates { get; set; }
@@ -62,10 +73,10 @@ namespace INPTPZ1.Fractal
 
         private Polynome CreatePolynome(Polynome polynome)
         {
-            polynome.Coefficients.Add(new ComplexNumber() { Re = 1 });
+            polynome.Coefficients.Add(new ComplexNumber() { Re = InitialRealNumberValue });
             polynome.Coefficients.Add(ComplexNumber.Zero);
             polynome.Coefficients.Add(ComplexNumber.Zero);
-            polynome.Coefficients.Add(new ComplexNumber() { Re = 1 });
+            polynome.Coefficients.Add(new ComplexNumber() { Re = InitialRealNumberValue });
 
             return polynome.Derive();
         }
@@ -74,9 +85,9 @@ namespace INPTPZ1.Fractal
         {
             var color = colors[rootIndex % colors.Length];
             color = Color.FromArgb(
-              Math.Min(Math.Max(0, color.R - (int)iteration * 2), 255),
-              Math.Min(Math.Max(0, color.G - (int)iteration * 2), 255),
-              Math.Min(Math.Max(0, color.B - (int)iteration * 2), 255));
+              Math.Min(Math.Max(MinColorValue, color.R - (int)iteration * IterationMultiplier), MaxColorValue),
+              Math.Min(Math.Max(MinColorValue, color.G - (int)iteration * IterationMultiplier), MaxColorValue),
+              Math.Min(Math.Max(MinColorValue, color.B - (int)iteration * IterationMultiplier), MaxColorValue));
             bitmap.SetPixel(y, x, color);
         }
 
@@ -86,7 +97,7 @@ namespace INPTPZ1.Fractal
             var id = 0;
             for (int i = 0; i < roots.Count; i++)
             {
-                if (Math.Pow(pixelWorldCoordinates.Re - roots[i].Re, 2) + Math.Pow(pixelWorldCoordinates.Im - roots[i].Im, 2) <= 0.01)
+                if (IsDeterminantSmallEnough(roots[i], pixelWorldCoordinates))
                 {
                     isRootIndexKnown = true;
                     id = i;
@@ -101,15 +112,20 @@ namespace INPTPZ1.Fractal
             return id;
         }
 
+        private bool IsDeterminantSmallEnough(ComplexNumber root, ComplexNumber complexNumber)
+        {
+            return Math.Pow(complexNumber.Re - root.Re, SquareExponent) + Math.Pow(complexNumber.Im - root.Im, SquareExponent) <= DeterminantThreshold;
+        }
+
         private float FindSolutionsUsingNewtonIterationMethod(Polynome polynome, Polynome derivedPolynome, ref ComplexNumber pixelWorldCoordinates)
         {
             float iteration = 0;
-            for (int i = 0; i < 30; i++)
+            for (int i = 0; i < MaximumNumberOfIterations; i++)
             {
                 var diff = polynome.Eval(pixelWorldCoordinates).Divide(derivedPolynome.Eval(pixelWorldCoordinates));
                 pixelWorldCoordinates = pixelWorldCoordinates.Subtract(diff);
 
-                if (Math.Pow(diff.Re, 2) + Math.Pow(diff.Im, 2) >= 0.5)
+                if (Math.Pow(diff.Re, SquareExponent) + Math.Pow(diff.Im, SquareExponent) >= IterationMaximumThreshold)
                 {
                     i--;
                 }
@@ -130,10 +146,10 @@ namespace INPTPZ1.Fractal
                 Im = y
             };
 
-            if (pixelWorldCoordinates.Re == 0)
-                pixelWorldCoordinates.Re = 0.0001;
-            if (pixelWorldCoordinates.Im == 0)
-                pixelWorldCoordinates.Im = 0.0001f;
+            if (pixelWorldCoordinates.Re == NumberZeroValue)
+                pixelWorldCoordinates.Re = NumberMinimalValue;
+            if (pixelWorldCoordinates.Im == NumberZeroValue)
+                pixelWorldCoordinates.Im = NumberMinimalValue;
             return pixelWorldCoordinates;
         }
     }
