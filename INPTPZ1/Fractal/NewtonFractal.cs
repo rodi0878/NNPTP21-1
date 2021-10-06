@@ -121,7 +121,9 @@ namespace INPTPZ1.Fractal
             int iteration = 0;
             for (int i = 0; i < MaximumNumberOfIterations; i++)
             {
-                ComplexNumber diff = polynome.Eval(pixelWorldCoordinates).Divide(derivedPolynome.Eval(pixelWorldCoordinates));
+                ComplexNumber evaluatedPolynome = polynome.Eval(pixelWorldCoordinates);
+                ComplexNumber evaluatedDerivedPolynome = derivedPolynome.Eval(pixelWorldCoordinates);
+                ComplexNumber diff = evaluatedPolynome.Divide(evaluatedDerivedPolynome);
                 pixelWorldCoordinates = pixelWorldCoordinates.Subtract(diff);
 
                 if (Math.Pow(diff.Re, SquareExponent) + Math.Pow(diff.Im, SquareExponent) >= IterationMaximumThreshold)
