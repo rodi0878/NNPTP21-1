@@ -79,6 +79,11 @@ namespace INPTPZ1.Mathematics
             };
         }
 
+        public double GetDerivative(ComplexNumber other, int exponent)
+        {
+            return Math.Pow(Re - other.Re, exponent) + Math.Pow(Im - other.Im, exponent);
+        }
+
         public override string ToString()
         {
             return $"({Re} + {Im}i)";

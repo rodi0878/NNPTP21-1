@@ -113,7 +113,7 @@ namespace INPTPZ1.Fractal
 
         private bool IsDeterminantSmallEnough(ComplexNumber root, ComplexNumber complexNumber)
         {
-            return Math.Pow(complexNumber.Re - root.Re, SquareExponent) + Math.Pow(complexNumber.Im - root.Im, SquareExponent) <= DeterminantThreshold;
+            return complexNumber.GetDerivative(root, SquareExponent) <= DeterminantThreshold;
         }
 
         private int FindSolutionsUsingNewtonIterationMethod(Polynome polynome, Polynome derivedPolynome, ref ComplexNumber pixelWorldCoordinates)
