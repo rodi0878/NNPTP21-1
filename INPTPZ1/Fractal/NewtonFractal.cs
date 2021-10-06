@@ -82,7 +82,7 @@ namespace INPTPZ1.Fractal
 
         private void ColorizePixel(Bitmap bitmap, Color[] colors, int x, int y, int iteration, int rootIndex)
         {
-            var color = colors[rootIndex % colors.Length];
+            Color color = colors[rootIndex % colors.Length];
             color = Color.FromArgb(
               Math.Min(Math.Max(MinColorValue, color.R - iteration * IterationMultiplier), MaxColorValue),
               Math.Min(Math.Max(MinColorValue, color.G - iteration * IterationMultiplier), MaxColorValue),
@@ -92,8 +92,8 @@ namespace INPTPZ1.Fractal
 
         private int FindRootIndex(List<ComplexNumber> roots, ComplexNumber pixelWorldCoordinates)
         {
-            var isRootIndexKnown = false;
-            var id = 0;
+            bool isRootIndexKnown = false;
+            int id = 0;
             for (int i = 0; i < roots.Count; i++)
             {
                 if (IsDeterminantSmallEnough(roots[i], pixelWorldCoordinates))
@@ -121,7 +121,7 @@ namespace INPTPZ1.Fractal
             int iteration = 0;
             for (int i = 0; i < MaximumNumberOfIterations; i++)
             {
-                var diff = polynome.Eval(pixelWorldCoordinates).Divide(derivedPolynome.Eval(pixelWorldCoordinates));
+                ComplexNumber diff = polynome.Eval(pixelWorldCoordinates).Divide(derivedPolynome.Eval(pixelWorldCoordinates));
                 pixelWorldCoordinates = pixelWorldCoordinates.Subtract(diff);
 
                 if (Math.Pow(diff.Re, SquareExponent) + Math.Pow(diff.Im, SquareExponent) >= IterationMaximumThreshold)
