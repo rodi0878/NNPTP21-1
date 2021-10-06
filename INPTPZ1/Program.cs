@@ -13,7 +13,7 @@ namespace INPTPZ1
         private static readonly int ImageWidthIndex = 0;
         private static readonly int ImageHeightIndex = 1;
         private static readonly int XMinIndex = 2;
-        private static readonly int XMaxIndex = 3;        
+        private static readonly int XMaxIndex = 3;
         private static readonly int YMinIndex = 4;
         private static readonly int YMaxIndex = 5;
         private static readonly int OutputPathIndex = 6;
@@ -21,12 +21,11 @@ namespace INPTPZ1
         {
             try
             {
-                NewtonFractal fractal = new NewtonFractal()
-                {
-                    ImageDimensions = new Dimension2D(int.Parse(args[ImageWidthIndex]), int.Parse(args[ImageHeightIndex])),
-                    MinCoordinates = new Point2D(double.Parse(args[XMinIndex]), double.Parse(args[YMinIndex])),
-                    MaxCoordinates = new Point2D(double.Parse(args[XMaxIndex]), double.Parse(args[YMaxIndex]))
-                };
+                NewtonFractal fractal = new NewtonFractal(
+                    new Dimension2D(int.Parse(args[ImageWidthIndex]), int.Parse(args[ImageHeightIndex])),
+                    new Point2D(double.Parse(args[XMinIndex]), double.Parse(args[YMinIndex])),
+                    new Point2D(double.Parse(args[XMaxIndex]), double.Parse(args[YMaxIndex]))
+                    );
 
                 Bitmap bitmap = fractal.GenerateNewtonFractalImage();
 
