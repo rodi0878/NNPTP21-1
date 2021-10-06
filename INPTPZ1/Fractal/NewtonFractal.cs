@@ -6,19 +6,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace INPTPZ1
+namespace INPTPZ1.Fractal
 {
     public class NewtonFractal
     {
-        private double xstep;
-        private double ystep;
-
-        public int ImageWidth { get; set; }
-        public int ImageHeight { get; set; }
-        public double XMin { get; set; }
-        public double XMax { get; set; }
-        public double YMin { get; set; }
-        public double YMax { get; set; }
+        public Dimension2D ImageDimensions { get; set; }
+        public Point2D MinCoordinates { get; set; }
+        public Point2D MaxCoordinates { get; set; }
         public Polynome Polynome { get; set; }
 
         public Bitmap GenerateNewtonFractalImage()
@@ -26,7 +20,7 @@ namespace INPTPZ1
             Polynome polynome = new Polynome();
             Polynome derivedPolynome = CreatePolynome(polynome);
 
-            Bitmap bitmap = new Bitmap(ImageWidth, ImageHeight);
+            Bitmap bitmap = new Bitmap(ImageDimensions.Width, ImageDimensions.Height);
 
             var colors = new Color[]
 {
@@ -43,14 +37,14 @@ namespace INPTPZ1
 
             List<ComplexNumber> roots = new List<ComplexNumber>();
 
-            xstep = (XMax - XMin) / ImageWidth;
-            ystep = (YMax - YMin) / ImageHeight;
+            double xstep = (MaxCoordinates.X - MinCoordinates.X) / ImageDimensions.Width;
+            double ystep = (MaxCoordinates.Y - MinCoordinates.Y) / ImageDimensions.Height;
 
-            for (int i = 0; i < ImageWidth; i++)
+            for (int i = 0; i < ImageDimensions.Width; i++)
             {
-                for (int j = 0; j < ImageHeight; j++)
+                for (int j = 0; j < ImageDimensions.Height; j++)
                 {
-                    ComplexNumber pixelWorldCoordinates = GetPointInWorldCoordinates(XMin, YMin, xstep, ystep, i, j);
+                    ComplexNumber pixelWorldCoordinates = GetPointInWorldCoordinates(MinCoordinates.X, MinCoordinates.Y, xstep, ystep, i, j);
 
                     float iteration = FindSolutionsUsingNewtonIterationMethod(polynome, derivedPolynome, ref pixelWorldCoordinates);
 

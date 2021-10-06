@@ -1,10 +1,7 @@
 ﻿using System;
 
-namespace INPTPZ1
+namespace INPTPZ1.Mathematics
 {
-
-    namespace Mathematics
-    {
         public class ComplexNumber
         {
             public readonly static ComplexNumber Zero = new ComplexNumber()
@@ -89,5 +86,4 @@ namespace INPTPZ1
 
 
         }
-    }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using INPTPZ1.Fractal;
 using INPTPZ1.Mathematics;
 
 namespace INPTPZ1
@@ -39,12 +40,9 @@ namespace INPTPZ1
 
             NewtonFractal fractal = new NewtonFractal()
             {
-                ImageHeight = imageDimensions[ImageHeightIndex],
-                ImageWidth = imageDimensions[ImageWidthIndex],
-                XMin = xmin,
-                XMax = xmax,
-                YMin = ymin,
-                YMax = ymax
+                ImageDimensions = new Dimension2D(imageDimensions[ImageWidthIndex], imageDimensions[ImageHeightIndex]),
+                MinCoordinates = new Point2D(xmin, ymin),
+                MaxCoordinates = new Point2D(xmax, ymax)
             };
 
             Bitmap bitmap = fractal.GenerateNewtonFractalImage();

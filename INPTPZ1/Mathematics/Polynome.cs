@@ -1,10 +1,7 @@
 ﻿using System.Collections.Generic;
 
-namespace INPTPZ1
+namespace INPTPZ1.Mathematics
 {
-
-    namespace Mathematics
-    {
         public class Polynome
         {
             public List<ComplexNumber> Coefficients { get; set; }
@@ -92,5 +89,4 @@ namespace INPTPZ1
                 return s;
             }
         }
-    }
 }
