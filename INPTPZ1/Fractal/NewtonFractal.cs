@@ -20,6 +20,13 @@ namespace INPTPZ1.Fractal
         private readonly double xstep;
         private readonly double ystep;
 
+        private readonly Color[] colors;
+
+        private readonly List<ComplexNumber> roots;
+
+        private readonly Polynome polynome;
+        private readonly Polynome derivedPolynome;
+
         public Dimension2D ImageDimensions { get; set; }
         public Point2D MinCoordinates { get; set; }
         public Point2D MaxCoordinates { get; set; }
@@ -32,31 +39,31 @@ namespace INPTPZ1.Fractal
 
             xstep = (MaxCoordinates.X - MinCoordinates.X) / ImageDimensions.Width;
             ystep = (MaxCoordinates.Y - MinCoordinates.Y) / ImageDimensions.Height;
+
+            colors = GenerateColorPallette();
+
+            roots = new List<ComplexNumber>();
+
+            polynome = Polynome.DefaultPolynome;
+            derivedPolynome = polynome.Derive();
         }
 
         public Bitmap GenerateNewtonFractalImage()
         {
             Bitmap bitmap = new Bitmap(ImageDimensions.Width, ImageDimensions.Height);
-            
-            Polynome polynome = Polynome.DefaultPolynome;
-            Polynome derivedPolynome = polynome.Derive();
 
             Console.WriteLine(polynome);
             Console.WriteLine(derivedPolynome);
-
-            Color[] colors = GenerateColorPallette();
-
-            List<ComplexNumber> roots = new List<ComplexNumber>();
 
             for (int i = 0; i < ImageDimensions.Width; i++)
             {
                 for (int j = 0; j < ImageDimensions.Height; j++)
                 {
                     ComplexNumber pixelWorldCoordinates = GetPointInWorldCoordinates(i, j);
-                    int iteration = FindSolutionsUsingNewtonIterationMethod(polynome, derivedPolynome, ref pixelWorldCoordinates);
-                    int rootIndex = FindRootIndex(roots, pixelWorldCoordinates);
+                    int iteration = FindSolutionsUsingNewtonIterationMethod(ref pixelWorldCoordinates);
+                    int rootIndex = FindRootIndex(pixelWorldCoordinates);
 
-                    ColorizePixel(bitmap, colors, i, j, iteration, rootIndex);
+                    ColorizePixel(bitmap, i, j, iteration, rootIndex);
                 }
             }
 
@@ -79,7 +86,7 @@ namespace INPTPZ1.Fractal
             };
         }
 
-        private void ColorizePixel(Bitmap bitmap, Color[] colors, int x, int y, int iteration, int rootIndex)
+        private void ColorizePixel(Bitmap bitmap, int x, int y, int iteration, int rootIndex)
         {
             Color color = colors[rootIndex % colors.Length];
             color = Color.FromArgb(
@@ -94,7 +101,7 @@ namespace INPTPZ1.Fractal
             return Math.Min(Math.Max(ColorMin, colorByte - iteration * IterationMultiplier), ColorMax);
         }
 
-        private int FindRootIndex(List<ComplexNumber> roots, ComplexNumber pixelWorldCoordinates)
+        private int FindRootIndex(ComplexNumber pixelWorldCoordinates)
         {
             bool isRootIndexKnown = false;
             int id = 0;
@@ -120,7 +127,7 @@ namespace INPTPZ1.Fractal
             return complexNumber.GetDerivative(root, SquareExponent) <= DeterminantThreshold;
         }
 
-        private int FindSolutionsUsingNewtonIterationMethod(Polynome polynome, Polynome derivedPolynome, ref ComplexNumber pixelWorldCoordinates)
+        private int FindSolutionsUsingNewtonIterationMethod(ref ComplexNumber pixelWorldCoordinates)
         {
             int iteration = 0;
             for (int i = 0; i < MaximumNumberOfIterations; i++)
