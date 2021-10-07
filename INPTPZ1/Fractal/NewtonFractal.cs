@@ -8,8 +8,8 @@ namespace INPTPZ1.Fractal
     public class NewtonFractal
     {
         private readonly int IterationMultiplier = 2;
-        private readonly int MaxColorValue = 255;
-        private readonly int MinColorValue = 0;
+        private readonly int ColorMax = 255;
+        private readonly int ColorMin = 0;
         private readonly int SquareExponent = 2;
         private readonly double DeterminantThreshold = 0.01;
         private readonly double IterationMaximumThreshold = 0.5;
@@ -84,10 +84,15 @@ namespace INPTPZ1.Fractal
         {
             Color color = colors[rootIndex % colors.Length];
             color = Color.FromArgb(
-              Math.Min(Math.Max(MinColorValue, color.R - iteration * IterationMultiplier), MaxColorValue),
-              Math.Min(Math.Max(MinColorValue, color.G - iteration * IterationMultiplier), MaxColorValue),
-              Math.Min(Math.Max(MinColorValue, color.B - iteration * IterationMultiplier), MaxColorValue));
+              GetValueForColorByte(color.R, iteration),
+              GetValueForColorByte(color.G, iteration),
+              GetValueForColorByte(color.B, iteration));
             bitmap.SetPixel(y, x, color);
+        }
+
+        private int GetValueForColorByte(byte colorByte, int iteration)
+        {
+            return Math.Min(Math.Max(ColorMin, colorByte - iteration * IterationMultiplier), ColorMax);
         }
 
         private int FindRootIndex(List<ComplexNumber> roots, ComplexNumber pixelWorldCoordinates)
