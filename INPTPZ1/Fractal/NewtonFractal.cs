@@ -17,13 +17,12 @@ namespace INPTPZ1.Fractal
         private readonly double NumberMinimalValue = 0.0001;
         private readonly int MaximumNumberOfIterations = 30;
 
-        private double xstep;
-        private double ystep;
+        private readonly double xstep;
+        private readonly double ystep;
 
         public Dimension2D ImageDimensions { get; set; }
         public Point2D MinCoordinates { get; set; }
         public Point2D MaxCoordinates { get; set; }
-        public Polynome Polynome { get; set; }
 
         public NewtonFractal(Dimension2D imageDimensions, Point2D minCoordinates, Point2D maxCoordinates)
         {
@@ -131,7 +130,7 @@ namespace INPTPZ1.Fractal
                 ComplexNumber diff = evaluatedPolynome.Divide(evaluatedDerivedPolynome);
                 pixelWorldCoordinates = pixelWorldCoordinates.Subtract(diff);
 
-                if (Math.Pow(diff.Re, SquareExponent) + Math.Pow(diff.Im, SquareExponent) >= IterationMaximumThreshold)
+                if (IsSquareAdditionOverThreshold(diff))
                 {
                     i--;
                 }
@@ -139,6 +138,16 @@ namespace INPTPZ1.Fractal
             }
 
             return iteration;
+        }
+
+        private bool IsSquareAdditionOverThreshold(ComplexNumber diff)
+        {
+            return GetSquareAddition(diff) >= IterationMaximumThreshold;
+        }
+
+        private double GetSquareAddition(ComplexNumber diff)
+        {
+            return Math.Pow(diff.Re, SquareExponent) + Math.Pow(diff.Im, SquareExponent);
         }
 
         private ComplexNumber GetPointInWorldCoordinates(int yValue, int xValue)

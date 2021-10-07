@@ -69,7 +69,12 @@ namespace INPTPZ1.Mathematics
 
         public ComplexNumber Divide(ComplexNumber otherNumber)
         {
-            ComplexNumber dividend = Multiply(new ComplexNumber() { Re = otherNumber.Re, Im = -otherNumber.Im });
+            ComplexNumber dividend = Multiply(new ComplexNumber() 
+            { 
+                Re = otherNumber.Re, 
+                Im = -otherNumber.Im 
+            });
+
             double divisor = otherNumber.Re * otherNumber.Re + otherNumber.Im * otherNumber.Im;
 
             return new ComplexNumber()
