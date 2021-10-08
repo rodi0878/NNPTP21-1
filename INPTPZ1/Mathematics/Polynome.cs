@@ -14,6 +14,7 @@ namespace INPTPZ1.Mathematics
                 new ComplexNumber() { Re = InitialRealNumberValue }
             }
         );
+
         public List<ComplexNumber> Coefficients { get; set; }
 
         public Polynome()

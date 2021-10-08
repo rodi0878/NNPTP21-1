@@ -8,12 +8,16 @@ namespace INPTPZ1.Fractal
     public class NewtonFractal
     {
         private readonly int IterationMultiplier = 2;
+
         private readonly int ColorMax = 255;
         private readonly int ColorMin = 0;
-        private readonly double DeterminantThreshold = 0.01;
+
+        private readonly double MaximumNumberDifference = 0.01;
         private readonly double IterationMaximumThreshold = 0.5;
+
         private readonly double NumberZeroValue = 0;
         private readonly double NumberMinimalValue = 0.0001;
+
         private readonly int MaximumNumberOfIterations = 30;
 
         private readonly double xstep;
@@ -28,18 +32,18 @@ namespace INPTPZ1.Fractal
 
         private readonly Bitmap bitmap;
 
-        public Dimension2D ImageDimensions { get; set; }
-        public Point2D MinCoordinates { get; set; }
-        public Point2D MaxCoordinates { get; set; }
+        private Dimension2D imageDimensions;
+        private Point2D minCoordinates;
+        private Point2D maxCoordinates;
 
         public NewtonFractal(Dimension2D imageDimensions, Point2D minCoordinates, Point2D maxCoordinates)
         {
-            ImageDimensions = imageDimensions;
-            MinCoordinates = minCoordinates;
-            MaxCoordinates = maxCoordinates;
+            this.imageDimensions = imageDimensions;
+            this.minCoordinates = minCoordinates;
+            this.maxCoordinates = maxCoordinates;
 
-            xstep = (MaxCoordinates.X - MinCoordinates.X) / ImageDimensions.Width;
-            ystep = (MaxCoordinates.Y - MinCoordinates.Y) / ImageDimensions.Height;
+            xstep = (this.maxCoordinates.X - this.minCoordinates.X) / this.imageDimensions.Width;
+            ystep = (this.maxCoordinates.Y - this.minCoordinates.Y) / this.imageDimensions.Height;
 
             colors = GenerateColorPallette();
 
@@ -48,7 +52,7 @@ namespace INPTPZ1.Fractal
             polynome = Polynome.DefaultPolynome;
             derivedPolynome = polynome.Derive();
 
-            bitmap = new Bitmap(ImageDimensions.Width, ImageDimensions.Height);
+            bitmap = new Bitmap(this.imageDimensions.Width, this.imageDimensions.Height);
         }
 
         public Bitmap GenerateNewtonFractalImage()
@@ -56,9 +60,9 @@ namespace INPTPZ1.Fractal
             Console.WriteLine(polynome);
             Console.WriteLine(derivedPolynome);
 
-            for (int i = 0; i < ImageDimensions.Width; i++)
+            for (int i = 0; i < imageDimensions.Width; i++)
             {
-                for (int j = 0; j < ImageDimensions.Height; j++)
+                for (int j = 0; j < imageDimensions.Height; j++)
                 {
                     ComplexNumber pixelWorldCoordinates = GetPointInWorldCoordinates(i, j);
                     int iteration = FindSolutionsUsingNewtonIterationMethod(ref pixelWorldCoordinates);
@@ -87,50 +91,27 @@ namespace INPTPZ1.Fractal
             };
         }
 
-        private void ColorizePixel(Point2D pixelCoordinates, int iteration, int rootIndex)
+        private ComplexNumber GetPointInWorldCoordinates(int yValue, int xValue)
         {
-            Color color = colors[rootIndex % colors.Length];
-            color = Color.FromArgb(
-              GetValueForColorComponent(color.R, iteration),
-              GetValueForColorComponent(color.G, iteration),
-              GetValueForColorComponent(color.B, iteration));
-            bitmap.SetPixel(pixelCoordinates.YAsInt, pixelCoordinates.XAsInt, color);
-        }
+            double y = minCoordinates.Y + yValue * ystep;
+            double x = minCoordinates.X + xValue * xstep;
 
-        private int GetValueForColorComponent(byte colorByte, int iteration)
-        {
-            return Math.Min(Math.Max(ColorMin, GetColorValueByIteration(colorByte, iteration)), ColorMax);
-        }
-
-        private int GetColorValueByIteration(byte colorByte, int iteration)
-        {
-            return colorByte - iteration * IterationMultiplier;
-        }
-
-        private int FindRootIndex(ComplexNumber pixelWorldCoordinates)
-        {
-            bool isRootIndexKnown = false;
-            int id = 0;
-            for (int i = 0; i < roots.Count; i++)
+            ComplexNumber pixelWorldCoordinates = new ComplexNumber()
             {
-                if (IsCoordinateDifferenceSmallEnough(roots[i], pixelWorldCoordinates))
-                {
-                    isRootIndexKnown = true;
-                    id = i;
-                }
-            }
-            if (!isRootIndexKnown)
-            {
-                roots.Add(pixelWorldCoordinates);
-                id = roots.Count;
-            }
+                Re = x,
+                Im = y
+            };
 
-            return id;
+            if (IsNumberZero(pixelWorldCoordinates.Re))
+                pixelWorldCoordinates.Re = NumberMinimalValue;
+            if (IsNumberZero(pixelWorldCoordinates.Im))
+                pixelWorldCoordinates.Im = NumberMinimalValue;
+            return pixelWorldCoordinates;
         }
 
-        private bool IsCoordinateDifferenceSmallEnough(ComplexNumber root, ComplexNumber complexNumber)
+        private bool IsNumberZero(double number)
         {
-            return complexNumber.SquareAndAddRealAndImaginaryDifferences(root) <= DeterminantThreshold;
+            return number == NumberZeroValue;
         }
 
         private int FindSolutionsUsingNewtonIterationMethod(ref ComplexNumber pixelWorldCoordinates)
@@ -158,27 +139,50 @@ namespace INPTPZ1.Fractal
             return diff.GetComplexConjugateProduct() >= IterationMaximumThreshold;
         }
 
-        private ComplexNumber GetPointInWorldCoordinates(int yValue, int xValue)
+        private int FindRootIndex(ComplexNumber pixelWorldCoordinates)
         {
-            double y = MinCoordinates.Y + yValue * ystep;
-            double x = MinCoordinates.X + xValue * xstep;
-
-            ComplexNumber pixelWorldCoordinates = new ComplexNumber()
+            bool isRootIndexKnown = false;
+            int id = 0;
+            for (int i = 0; i < roots.Count; i++)
             {
-                Re = x,
-                Im = y
-            };
+                if (IsCoordinateDifferenceSmallEnough(roots[i], pixelWorldCoordinates))
+                {
+                    isRootIndexKnown = true;
+                    id = i;
+                }
+            }
+            if (!isRootIndexKnown)
+            {
+                roots.Add(pixelWorldCoordinates);
+                id = roots.Count;
+            }
 
-            if (IsNumberZero(pixelWorldCoordinates.Re))
-                pixelWorldCoordinates.Re = NumberMinimalValue;
-            if (IsNumberZero(pixelWorldCoordinates.Im))
-                pixelWorldCoordinates.Im = NumberMinimalValue;
-            return pixelWorldCoordinates;
+            return id;
         }
 
-        private bool IsNumberZero(double number)
+        private bool IsCoordinateDifferenceSmallEnough(ComplexNumber root, ComplexNumber complexNumber)
         {
-            return number == NumberZeroValue;
+            return complexNumber.SquareAndAddRealAndImaginaryDifferences(root) <= MaximumNumberDifference;
+        }
+
+        private void ColorizePixel(Point2D pixelCoordinates, int iteration, int rootIndex)
+        {
+            Color color = colors[rootIndex % colors.Length];
+            color = Color.FromArgb(
+              GetValueForColorComponent(color.R, iteration),
+              GetValueForColorComponent(color.G, iteration),
+              GetValueForColorComponent(color.B, iteration));
+            bitmap.SetPixel(pixelCoordinates.YAsInt, pixelCoordinates.XAsInt, color);
+        }
+
+        private int GetValueForColorComponent(byte colorByte, int iteration)
+        {
+            return Math.Min(Math.Max(ColorMin, GetColorValueByIteration(colorByte, iteration)), ColorMax);
+        }
+
+        private int GetColorValueByIteration(byte colorByte, int iteration)
+        {
+            return colorByte - iteration * IterationMultiplier;
         }
     }
 }
