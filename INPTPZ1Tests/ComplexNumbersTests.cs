@@ -30,8 +30,8 @@ namespace INPTPZ1.Mathematics.Tests
             };
 
             Assert.AreEqual(expectedNumber, actualNumber);
-        }        
-        
+        }
+
         [TestMethod()]
         public void AddComplexNumbersRe1ImNeg1AndRe0Im0Test()
         {
@@ -41,16 +41,16 @@ namespace INPTPZ1.Mathematics.Tests
                 Im = -1
             };
 
-            ComplexNumber b = new ComplexNumber() 
-            { 
-                Re = 0, 
-                Im = 0 
+            ComplexNumber b = new ComplexNumber()
+            {
+                Re = 0,
+                Im = 0
             };
 
             ComplexNumber actualNumber = a.Add(b);
 
-            ComplexNumber expectedNumber = new ComplexNumber() 
-            { 
+            ComplexNumber expectedNumber = new ComplexNumber()
+            {
                 Re = 1,
                 Im = -1
             };

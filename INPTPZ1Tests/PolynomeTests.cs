@@ -18,8 +18,8 @@ namespace INPTPZ1Tests.Mathematics.Tests
             ComplexNumber expected = new ComplexNumber() { Re = 1, Im = 0 };
 
             Assert.AreEqual(expected, result);
-        }        
-        
+        }
+
         [TestMethod()]
         public void PolynomeEvalComplexNumberRe1Im0Test()
         {
@@ -33,7 +33,7 @@ namespace INPTPZ1Tests.Mathematics.Tests
 
             Assert.AreEqual(expected, result);
         }
-        
+
         [TestMethod()]
         public void PolynomeEvalComplexNumberRe2Im0Test()
         {
@@ -46,8 +46,8 @@ namespace INPTPZ1Tests.Mathematics.Tests
             ComplexNumber expected = new ComplexNumber() { Re = 5.0000000000, Im = 0 };
 
             Assert.AreEqual(expected, result);
-        }     
-        
+        }
+
         [TestMethod()]
         public void PolynomeStringValueTest()
         {
