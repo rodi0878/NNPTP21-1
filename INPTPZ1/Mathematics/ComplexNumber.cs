@@ -9,6 +9,9 @@ namespace INPTPZ1.Mathematics
             Re = 0,
             Im = 0
         };
+
+        private readonly int SquareExponent = 2;
+
         public double Re { get; set; }
         public double Im { get; set; }
 
@@ -84,9 +87,14 @@ namespace INPTPZ1.Mathematics
             };
         }
 
-        public double GetDerivative(ComplexNumber otherNumber, int exponent)
+        public double GetComplexConjugateProduct()
         {
-            return Math.Pow(Re - otherNumber.Re, exponent) + Math.Pow(Im - otherNumber.Im, exponent);
+            return SquareNumber(Re) + SquareNumber(Im);
+        }
+
+        public double SquareAndAddRealAndImaginaryDifferences(ComplexNumber otherNumber)
+        {
+            return SquareNumber(Re - otherNumber.Re) + SquareNumber(Im - otherNumber.Im);
         }
 
         public override string ToString()
@@ -94,6 +102,9 @@ namespace INPTPZ1.Mathematics
             return $"({Re} + {Im}i)";
         }
 
-
+        private double SquareNumber(double number)
+        {
+            return Math.Pow(number, SquareExponent);
+        }
     }
 }
