@@ -9,9 +9,6 @@ namespace INPTPZ1
         {
             public List<ComplexNumber> Coefficients { get; set; }
 
-            /// <summary>
-            /// Constructor
-            /// </summary>
             public Polynome()
             {
                 Coefficients = new List<ComplexNumber>();
@@ -75,10 +72,7 @@ namespace INPTPZ1
                 return resultPolynomial;
             }
 
-            /// <summary>
-            /// ToString
-            /// </summary>
-            /// <returns>String repr of polynomial</returns>
+            
             public override string ToString()
             {
                 string resultPolynomial = "";

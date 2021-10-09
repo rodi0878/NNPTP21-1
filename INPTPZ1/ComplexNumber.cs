@@ -20,6 +20,14 @@ namespace INPTPZ1
                 return base.Equals(obj);
             }
 
+            public override int GetHashCode()
+            {
+                var hashCode = 29377563;
+                hashCode = hashCode * -1521134295 + Re.GetHashCode();
+                hashCode = hashCode * -1521134295 + Im.GetHashCode();
+                return hashCode;
+            }
+
             public readonly static ComplexNumber Zero = new ComplexNumber()
             {
                 Re = 0,
@@ -78,16 +86,6 @@ namespace INPTPZ1
                 return $"({Re} + {Im}i)";
             }
 
-            /*
-             * TODO: zjistit jestli ano nebo ne
-             * 
-             * public override int GetHashCode()
-            {
-                var hashCode = 29377563;
-                hashCode = hashCode * -1521134295 + Re.GetHashCode();
-                hashCode = hashCode * -1521134295 + Im.GetHashCode();
-                return hashCode;
-            }*/
         }
     }
 }

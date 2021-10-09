@@ -21,32 +21,25 @@ namespace INPTPZ1
         private static List<ComplexNumber> roots;
         private static readonly Color[] colors = new Color[]
             {
-                Color.Red, Color.Blue, Color.Green, Color.Yellow, Color.Orange, Color.Fuchsia, Color.Gold, Color.Cyan, Color.Magenta
+                Color.Red, Color.Blue, Color.Green, Color.Yellow, Color.Orange, 
+                Color.Fuchsia, Color.Gold, Color.Cyan, Color.Magenta
             };
 
         static void Main(string[] args)
         {
-            //TODO: přidat tu try catch (v případě, že argumenty nebudou ok)
-            ValueInitialization(args, out string output);
-            PolynomeInitialization();
-            CreateImage();
-            bitmap.Save(output ?? "../../../out.png");
-        }
-
-        private static void CreateImage()
-        {
-            for (int i = 0; i < bitmap.Width; i++)
+            try
             {
-                for (int j = 0; j < bitmap.Height; j++)
-                {
-                    ComplexNumber resultCoordinates = CalculatePixelCoordinates(i, j);
-                    int iterations = CalculateNewtonIteration(ref resultCoordinates);
-                    int rootNumber = CalculateRootNumber(resultCoordinates);
-                    Color pixelColor = CalculatePixelColor(iterations, rootNumber);
-                    bitmap.SetPixel(j, i, pixelColor);
-                }
+                ValueInitialization(args, out string output);
+                PolynomeInitialization();
+                CreateImage();
+                bitmap.Save(output ?? "../../../out.png");
+            }
+            catch (ArgumentException ex)
+            {
+                Console.WriteLine("ArgumentException \n" + ex);
             }
         }
+
 
         private static void ValueInitialization(string[] args, out string output)
         {
@@ -65,7 +58,7 @@ namespace INPTPZ1
             }
             else
             {
-                throw new FormatException("Bad arguments.");
+                throw new ArgumentException("Bad arguments.");
             }
         }
 
@@ -86,54 +79,19 @@ namespace INPTPZ1
             Console.WriteLine(polynome);
             Console.WriteLine(derivedPolynome);
         }
-
-        private static Color CalculatePixelColor(int iterations, int rootNumber)
+        private static void CreateImage()
         {
-            Color pixelColor = colors[rootNumber % colors.Length];
-            pixelColor = Color.FromArgb(
-                Math.Min(Math.Max(0, pixelColor.R - iterations * 2), 255), 
-                Math.Min(Math.Max(0, pixelColor.G - iterations * 2), 255), 
-                Math.Min(Math.Max(0, pixelColor.B - iterations * 2), 255));
-            return pixelColor;
-        }
-
-        private static int CalculateRootNumber(ComplexNumber resultCoordinates)
-        {
-            bool isRootKnown = false;
-            int rootNumber = 0;
-            for (int i = 0; i < roots.Count; i++)
+            for (int i = 0; i < bitmap.Width; i++)
             {
-                if (Math.Pow(resultCoordinates.Re - roots[i].Re, 2) + Math.Pow(resultCoordinates.Im - roots[i].Im, 2) <= ROOT_LEVEL_OF_TOLERANCE)
+                for (int j = 0; j < bitmap.Height; j++)
                 {
-                    isRootKnown = true;
-                    rootNumber = i;
+                    ComplexNumber resultCoordinates = CalculatePixelCoordinates(i, j);
+                    int iterations = CalculateNewtonIteration(ref resultCoordinates);
+                    int rootNumber = CalculateRootNumber(resultCoordinates);
+                    Color pixelColor = CalculatePixelColor(iterations, rootNumber);
+                    bitmap.SetPixel(j, i, pixelColor);
                 }
             }
-            if (!isRootKnown)
-            {
-                roots.Add(resultCoordinates);
-                rootNumber = roots.Count;
-            }
-
-            return rootNumber;
-        }
-
-        private static int CalculateNewtonIteration(ref ComplexNumber resultCoordinates)
-        {
-            int iterations = 0;
-            for (int i = 0; i < NUMBER_OF_ITERATIONS; i++)
-            {
-                ComplexNumber difference = polynome.Evaluation(resultCoordinates).Divide(derivedPolynome.Evaluation(resultCoordinates));
-                resultCoordinates = resultCoordinates.Subtract(difference);
-
-                if (Math.Pow(difference.Re, 2) + Math.Pow(difference.Im, 2) >= LEVEL_OF_TOLERANCE)
-                {
-                    i--;
-                }
-                iterations++;
-            }
-
-            return iterations;
         }
 
         private static ComplexNumber CalculatePixelCoordinates(int bitmapY, int bitmapX)
@@ -159,5 +117,56 @@ namespace INPTPZ1
 
             return resultCoordinates;
         }
+
+        private static int CalculateNewtonIteration(ref ComplexNumber resultCoordinates)
+        {
+            int iterations = 0;
+            for (int i = 0; i < NUMBER_OF_ITERATIONS; i++)
+            {
+                ComplexNumber difference = polynome.Evaluation(resultCoordinates)
+                    .Divide(derivedPolynome.Evaluation(resultCoordinates));
+                resultCoordinates = resultCoordinates.Subtract(difference);
+
+                if (Math.Pow(difference.Re, 2) + Math.Pow(difference.Im, 2) >= LEVEL_OF_TOLERANCE)
+                {
+                    i--;
+                }
+                iterations++;
+            }
+
+            return iterations;
+        }
+
+        private static int CalculateRootNumber(ComplexNumber resultCoordinates)
+        {
+            bool isRootKnown = false;
+            int rootNumber = 0;
+            for (int i = 0; i < roots.Count; i++)
+            {
+                if (Math.Pow(resultCoordinates.Re - roots[i].Re, 2) + 
+                    Math.Pow(resultCoordinates.Im - roots[i].Im, 2) <= ROOT_LEVEL_OF_TOLERANCE)
+                {
+                    isRootKnown = true;
+                    rootNumber = i;
+                }
+            }
+            if (!isRootKnown)
+            {
+                roots.Add(resultCoordinates);
+                rootNumber = roots.Count;
+            }
+
+            return rootNumber;
+        }
+        private static Color CalculatePixelColor(int iterations, int rootNumber)
+        {
+            Color pixelColor = colors[rootNumber % colors.Length];
+            pixelColor = Color.FromArgb(
+                Math.Min(Math.Max(0, pixelColor.R - iterations * 2), 255), 
+                Math.Min(Math.Max(0, pixelColor.G - iterations * 2), 255), 
+                Math.Min(Math.Max(0, pixelColor.B - iterations * 2), 255));
+            return pixelColor;
+        }
+
     }
 }
