@@ -34,7 +34,7 @@ namespace INPTPZ1.Mathematics.Tests
         {
             Polynomial polynomial = new Polynomial(new ComplexNumber() { Re = 1, Im = 0 }, new ComplexNumber() { Re = 0, Im = 0 }, new ComplexNumber() { Re = 1, Im = 0 });
             ComplexNumber result = polynomial.EvaluateAtPointX(new ComplexNumber() { Re = 2, Im = 0 });
-            ComplexNumber expected = new ComplexNumber() { Re = 5.0000000000, Im = 0 };
+            ComplexNumber expected = new ComplexNumber() { Re = 5, Im = 0 };
 
             Assert.AreEqual(expected, result);
         }
