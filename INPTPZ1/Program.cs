@@ -9,228 +9,108 @@ namespace INPTPZ1
     /// This program should produce Newton fractals.
     /// See more at: https://en.wikipedia.org/wiki/Newton_fractal
     /// </summary>
-    class Program
+    public class Program
     {
-        static void Main(string[] args)
-        {
-            int[] intargs = new int[2];
-            for (int i = 0; i < intargs.Length; i++)
-            {
-                intargs[i] = int.Parse(args[i]);
-            }
-            double[] doubleargs = new double[4];
-            for (int i = 0; i < doubleargs.Length; i++)
-            {
-                doubleargs[i] = double.Parse(args[i + 2]);
-            }
-            string output = args[6];
-            // TODO: add parameters from args?
-            Bitmap bmp = new Bitmap(intargs[0], intargs[1]);
-            double xmin = doubleargs[0];
-            double xmax = doubleargs[1];
-            double ymin = doubleargs[2];
-            double ymax = doubleargs[3];
-
-            double xstep = (xmax - xmin) / intargs[0];
-            double ystep = (ymax - ymin) / intargs[1];
-
-            List<ComplexNumber> koreny = new List<ComplexNumber>();
-            // TODO: poly should be parameterised?
-            Polynomial p = new Polynomial();
-            p.Coefficients.Add(new ComplexNumber() { Re = 1 });
-            p.Coefficients.Add(ComplexNumber.ZERO);
-            p.Coefficients.Add(ComplexNumber.ZERO);
-            //p.Coe.Add(Cplx.Zero);
-            p.Coefficients.Add(new ComplexNumber() { Re = 1 });
-            Polynomial ptmp = p;
-            Polynomial pd = p.Derive();
-
-            Console.WriteLine(p);
-            Console.WriteLine(pd);
-
-            var clrs = new Color[]
+        private const double FIND_ROOT_INDEX_ACCURACY = 0.01;
+        private const string DEFAULT_IMAGE_FILENAME = "../../../out.png";
+        private const double FIND_ROOT_ACCURACY = 0.5;
+        private const int NEWTON_ITERATION_THRESHOLD = 30;
+        private const double ZERO_IN_WORLD_COORDINATES = 0.0001;
+        private readonly static Color[] COLOURS = new Color[]
             {
                 Color.Red, Color.Blue, Color.Green, Color.Yellow, Color.Orange, Color.Fuchsia, Color.Gold, Color.Cyan, Color.Magenta
             };
 
-            var maxid = 0;
-
-            // TODO: cleanup!!!
-            // for every pixel in image...
-            for (int i = 0; i < intargs[0]; i++)
-            {
-                for (int j = 0; j < intargs[1]; j++)
-                {
-                    // find "world" coordinates of pixel
-                    double y = ymin + i * ystep;
-                    double x = xmin + j * xstep;
-
-                    ComplexNumber ox = new ComplexNumber()
-                    {
-                        Re = x,
-                        Im = (float)(y)
-                    };
-
-                    if (ox.Re == 0)
-                        ox.Re = 0.0001;
-                    if (ox.Im == 0)
-                        ox.Im = 0.0001f;
-
-                    //Console.WriteLine(ox);
-
-                    // find solution of equation using newton's iteration
-                    float it = 0;
-                    for (int q = 0; q< 30; q++)
-                    {
-                        var diff = p.Eval(ox).Divide(pd.Eval(ox));
-                        ox = ox.Subtract(diff);
-
-                        //Console.WriteLine($"{q} {ox} -({diff})");
-                        if (Math.Pow(diff.Re, 2) + Math.Pow(diff.Im, 2) >= 0.5)
-                        {
-                            q--;
-                        }
-                        it++;
-                    }
-
-                    //Console.ReadKey();
-
-                    // find solution root number
-                    var known = false;
-                    var id = 0;
-                    for (int w = 0; w <koreny.Count;w++)
-                    {
-                        if (Math.Pow(ox.Re- koreny[w].Re, 2) + Math.Pow(ox.Im - koreny[w].Im, 2) <= 0.01)
-                        {
-                            known = true;
-                            id = w;
-                        }
-                    }
-                    if (!known)
-                    {
-                        koreny.Add(ox);
-                        id = koreny.Count;
-                        maxid = id + 1; 
-                    }
-
-                    // colorize pixel according to root number
-                    //int vv = id;
-                    //int vv = id * 50 + (int)it*5;
-                    var vv = clrs[id % clrs.Length];
-                    vv = Color.FromArgb(vv.R, vv.G, vv.B);
-                    vv = Color.FromArgb(Math.Min(Math.Max(0, vv.R-(int)it*2), 255), Math.Min(Math.Max(0, vv.G - (int)it*2), 255), Math.Min(Math.Max(0, vv.B - (int)it*2), 255));
-                    //vv = Math.Min(Math.Max(0, vv), 255);
-                    bmp.SetPixel(j, i, vv);
-                    //bmp.SetPixel(j, i, Color.FromArgb(vv, vv, vv));
-                }
-            }
-
-            // TODO: delete I suppose...
-            //for (int i = 0; i < 300; i++)
-            //{
-            //    for (int j = 0; j < 300; j++)
-            //    {
-            //        Color c = bmp.GetPixel(j, i);
-            //        int nv = (int)Math.Floor(c.R * (255.0 / maxid));
-            //        bmp.SetPixel(j, i, Color.FromArgb(nv, nv, nv));
-            //    }
-            //}
-
-                    bmp.Save(output ?? "../../../out.png");
-            //Console.ReadKey();
-        }
-    }
-
-    namespace Mathematics
-    {
-        public class Polynomial
+        static void Main(string[] args)
         {
-
-            public List<ComplexNumber> Coefficients { get; set; }
-
-            public Polynomial() => Coefficients = new List<ComplexNumber>();
-
-            public void Add(ComplexNumber coeficient) =>
-                Coefficients.Add(coeficient);
-
-            /// <summary>
-            /// Derives this polynomial and creates new one
-            /// </summary>
-            /// <returns>Derivated polynomial</returns>
-            public Polynomial Derive()
+            int imageWidth = int.Parse(args[0]);
+            int imageHeight = int.Parse(args[1]);
+            double[] doubleArguments = new double[4];
+            for (int i = 0; i < doubleArguments.Length; i++)
             {
-                Polynomial p = new Polynomial();
-                for (int q = 1; q < Coefficients.Count; q++)
+                doubleArguments[i] = double.Parse(args[i + 2]);
+            }
+            string filename = args[6];
+            double xmin = doubleArguments[0];
+            double xmax = doubleArguments[1];
+            double ymin = doubleArguments[2];
+            double ymax = doubleArguments[3];
+            double xstep = (xmax - xmin) / imageWidth;
+            double ystep = (ymax - ymin) / imageHeight;
+
+            Bitmap bitmapImage = new Bitmap(imageWidth, imageHeight);
+            List<ComplexNumber> roots = new List<ComplexNumber>();
+            Polynomial polynomial = new Polynomial(new ComplexNumber() { Re = 1 }, ComplexNumber.ZERO, ComplexNumber.ZERO, new ComplexNumber() { Re = 1 });
+            Polynomial polynomialDerived = polynomial.Derive();
+
+            Console.WriteLine(polynomial);
+            Console.WriteLine(polynomialDerived);
+
+            for (int i = 0; i < imageWidth; i++)
+            {
+                for (int j = 0; j < imageHeight; j++)
                 {
-                    p.Coefficients.Add(Coefficients[q].Multiply(new ComplexNumber() { Re = q }));
+                    ComplexNumber pixelInWorldCoordinates = GetPointInWorldCoordinates(xmin, ymin, xstep, ystep, i, j);
+                    int iteration = FindSolutionUsingNewtonIterationMethod(polynomial, polynomialDerived, ref pixelInWorldCoordinates);
+                    int index = FindRootIndex(roots, pixelInWorldCoordinates);
+                    ColorizePixel(bitmapImage, i, j, iteration, index);
                 }
-
-                return p;
             }
+            bitmapImage.Save(filename ?? DEFAULT_IMAGE_FILENAME);
+        }
 
-            /// <summary>
-            /// Evaluates polynomial at given point
-            /// </summary>
-            /// <param name="x">point of evaluation</param>
-            /// <returns>y</returns>
-            public ComplexNumber Eval(double x)
+        private static int FindRootIndex(List<ComplexNumber> roots, ComplexNumber pixelInWorldCoordinates)
+        {
+            for (int i = 0; i < roots.Count; i++)
             {
-                var y = Eval(new ComplexNumber() { Re = x, Im = 0 });
-                return y;
-            }
-
-            /// <summary>
-            /// Evaluates polynomial at given point
-            /// </summary>
-            /// <param name="x">point of evaluation</param>
-            /// <returns>y</returns>
-            public ComplexNumber Eval(ComplexNumber x)
-            {
-                ComplexNumber s = ComplexNumber.ZERO;
-                for (int i = 0; i < Coefficients.Count; i++)
+                if (Math.Pow(pixelInWorldCoordinates.Re - roots[i].Re, 2) + Math.Pow(pixelInWorldCoordinates.Im - roots[i].Im, 2) <= FIND_ROOT_INDEX_ACCURACY)
                 {
-                    ComplexNumber coef = Coefficients[i];
-                    ComplexNumber bx = x;
-                    int power = i;
-
-                    if (i > 0)
-                    {
-                        for (int j = 0; j < power - 1; j++)
-                            bx = bx.Multiply(x);
-
-                        coef = coef.Multiply(bx);
-                    }
-
-                    s = s.Add(coef);
+                    return i;
                 }
-
-                return s;
             }
+            roots.Add(pixelInWorldCoordinates);
+            return roots.Count;
+        }
 
-            /// <summary>
-            /// ToString
-            /// </summary>
-            /// <returns>String repr of polynomial</returns>
-            public override string ToString()
+        private static void ColorizePixel(Bitmap bitmapImage, int i, int j, int iterationCount, int index)
+        {
+            Color color = COLOURS[index % COLOURS.Length];
+            color = Color.FromArgb(
+                Math.Min(Math.Max(0, color.R - (int)iterationCount * 2), 255),
+                Math.Min(Math.Max(0, color.G - (int)iterationCount * 2), 255),
+                Math.Min(Math.Max(0, color.B - (int)iterationCount * 2), 255));
+            bitmapImage.SetPixel(j, i, color);
+        }
+
+        private static int FindSolutionUsingNewtonIterationMethod(Polynomial polynomial, Polynomial polynomialDerived, ref ComplexNumber pixelInWorldCoordinates)
+        {
+            int iterationCount = 0;
+            for (int i = 0; i < NEWTON_ITERATION_THRESHOLD; i++)
             {
-                string s = "";
-                int i = 0;
-                for (; i < Coefficients.Count; i++)
-                {
-                    s += Coefficients[i];
-                    if (i > 0)
-                    {
-                        int j = 0;
-                        for (; j < i; j++)
-                        {
-                            s += "x";
-                        }
-                    }
-                    if (i+1<Coefficients.Count)
-                    s += " + ";
-                }
-                return s;
+                ComplexNumber differentiable = polynomial.EvaluateAtPointX(pixelInWorldCoordinates).Divide(polynomialDerived.EvaluateAtPointX(pixelInWorldCoordinates));
+                pixelInWorldCoordinates = pixelInWorldCoordinates.Subtract(differentiable);
+
+                if (Math.Pow(differentiable.Re, 2) + Math.Pow(differentiable.Im, 2) >= FIND_ROOT_ACCURACY)
+                    i--;
+                iterationCount++;
             }
+
+            return iterationCount;
+        }
+
+        private static ComplexNumber GetPointInWorldCoordinates(double xmin, double ymin, double xstep, double ystep, int i, int j)
+        {
+            ComplexNumber pointInWorldCoordinates = new ComplexNumber()
+            {
+                Re = xmin + j * xstep,
+                Im = ymin + i * ystep
+            };
+
+            if (pointInWorldCoordinates.Re == 0)
+                pointInWorldCoordinates.Re = ZERO_IN_WORLD_COORDINATES;
+            if (pointInWorldCoordinates.Im == 0)
+                pointInWorldCoordinates.Im = ZERO_IN_WORLD_COORDINATES;
+            return pointInWorldCoordinates;
         }
     }
 }
