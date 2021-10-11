@@ -9,7 +9,7 @@ namespace INPTPZ1
     /// This program should produce Newton fractals.
     /// See more at: https://en.wikipedia.org/wiki/Newton_fractal
     /// </summary>
-    public class Program
+    public class NewtonFractal
     {
         private const double FIND_ROOT_INDEX_ACCURACY = 0.01;
         private const string DEFAULT_IMAGE_FILENAME = "../../../out.png";
@@ -21,31 +21,22 @@ namespace INPTPZ1
                 Color.Red, Color.Blue, Color.Green, Color.Yellow, Color.Orange, Color.Fuchsia, Color.Gold, Color.Cyan, Color.Magenta
             };
 
+        private static int imageWidth, imageHeight;
+        private static string filename;
+        private static double xmin, xmax, ymin, ymax, xstep, ystep;
+        private static Polynomial polynomial, polynomialDerived;
         static void Main(string[] args)
         {
-            int imageWidth = int.Parse(args[0]);
-            int imageHeight = int.Parse(args[1]);
-            double[] doubleArguments = new double[4];
-            for (int i = 0; i < doubleArguments.Length; i++)
-            {
-                doubleArguments[i] = double.Parse(args[i + 2]);
-            }
-            string filename = args[6];
-            double xmin = doubleArguments[0];
-            double xmax = doubleArguments[1];
-            double ymin = doubleArguments[2];
-            double ymax = doubleArguments[3];
-            double xstep = (xmax - xmin) / imageWidth;
-            double ystep = (ymax - ymin) / imageHeight;
+            ParseArguments(args);
+            PolynomialInitialization();
+            Bitmap bitmapImage = CreateFractalImage();
+            bitmapImage.Save(filename ?? DEFAULT_IMAGE_FILENAME);
+        }
 
+        private static Bitmap CreateFractalImage()
+        {
             Bitmap bitmapImage = new Bitmap(imageWidth, imageHeight);
             List<ComplexNumber> roots = new List<ComplexNumber>();
-            Polynomial polynomial = new Polynomial(new ComplexNumber() { Re = 1 }, ComplexNumber.ZERO, ComplexNumber.ZERO, new ComplexNumber() { Re = 1 });
-            Polynomial polynomialDerived = polynomial.Derive();
-
-            Console.WriteLine(polynomial);
-            Console.WriteLine(polynomialDerived);
-
             for (int i = 0; i < imageWidth; i++)
             {
                 for (int j = 0; j < imageHeight; j++)
@@ -56,7 +47,33 @@ namespace INPTPZ1
                     ColorizePixel(bitmapImage, i, j, iteration, index);
                 }
             }
-            bitmapImage.Save(filename ?? DEFAULT_IMAGE_FILENAME);
+            return bitmapImage;
+        }
+
+        private static void PolynomialInitialization()
+        {
+            polynomial = new Polynomial(new ComplexNumber() { Re = 1 }, ComplexNumber.ZERO, ComplexNumber.ZERO, new ComplexNumber() { Re = 1 });
+            polynomialDerived = polynomial.Derive();
+            Console.WriteLine(polynomial);
+            Console.WriteLine(polynomialDerived);
+        }
+
+        private static void ParseArguments(string[] args)
+        {
+            imageWidth = int.Parse(args[0]);
+            imageHeight = int.Parse(args[1]);
+            double[] doubleArguments = new double[4];
+            for (int i = 0; i < doubleArguments.Length; i++)
+            {
+                doubleArguments[i] = double.Parse(args[i + 2]);
+            }
+            filename = args[6];
+            xmin = doubleArguments[0];
+            xmax = doubleArguments[1];
+            ymin = doubleArguments[2];
+            ymax = doubleArguments[3];
+            xstep = (xmax - xmin) / imageWidth;
+            ystep = (ymax - ymin) / imageHeight;
         }
 
         private static int FindRootIndex(List<ComplexNumber> roots, ComplexNumber pixelInWorldCoordinates)
