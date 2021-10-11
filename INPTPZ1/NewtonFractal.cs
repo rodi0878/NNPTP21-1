@@ -9,35 +9,48 @@ namespace INPTPZ1
     /// This program should produce Newton fractals.
     /// See more at: https://en.wikipedia.org/wiki/Newton_fractal
     /// </summary>
-    class Program
+    class NewtonFractal
     {
         private static readonly double ROOT_FINDING_ACCURACY = 0.5;
         private static readonly double ACCURACY_OF_ROOT_EQUALITY = 0.01;
         private static readonly int MAXIMUM_ITERATIONS_IN_NEWTONS_METHOD = 30;
         private static readonly double NUMBER_CLOSE_TO_ZERO = 0.0001;
 
-        static void Main(string[] args)
+        private double xMin, xMax, xStep;
+        private double yMin, yMax, yStep;
+        string output;
+        private Bitmap bitmap;
+
+        public NewtonFractal(string[] args)
         {
             int[] intargs;
             double[] doubleargs;
-            string output;
-            CategorizeArguments(args, out intargs, out doubleargs, out output);
+            CategorizeArguments(args, out intargs, out doubleargs);
 
-            Bitmap bitmap = new Bitmap(intargs[0], intargs[1]);
-            double xMin = doubleargs[0];
-            double xMax = doubleargs[1];
-            double yMin = doubleargs[2];
-            double yMax = doubleargs[3];
+            output = args[6];
+            bitmap = new Bitmap(intargs[0], intargs[1]);
+            xMin = doubleargs[0];
+            xMax = doubleargs[1];
+            yMin = doubleargs[2];
+            yMax = doubleargs[3];
 
-            double xStep = (xMax - xMin) / bitmap.Width;
-            double yStep = (yMax - yMin) / bitmap.Height;
+            xStep = (xMax - xMin) / bitmap.Width;
+            yStep = (yMax - yMin) / bitmap.Height;
+        }
 
-            RenderNewtonFractal(bitmap, xMin, yMin, xStep, yStep);
+        static void Main(string[] args)
+        {
+            NewtonFractal fractal = new NewtonFractal(args);
+            fractal.RenderNewtonFractal();
+            fractal.SaveImage();
+        }
 
+        public void SaveImage()
+        {
             bitmap.Save(output ?? "../../../out.png");
         }
 
-        private static void CategorizeArguments(string[] args, out int[] intargs, out double[] doubleargs, out string output)
+        private void CategorizeArguments(string[] args, out int[] intargs, out double[] doubleargs)
         {
             intargs = new int[2];
             for (int i = 0; i < intargs.Length; i++)
@@ -50,11 +63,9 @@ namespace INPTPZ1
             {
                 doubleargs[i] = double.Parse(args[i + 2]);
             }
-
-            output = args[6];
         }
 
-        private static void RenderNewtonFractal(Bitmap bitmap, double xMin, double yMin, double xStep, double yStep)
+        public void RenderNewtonFractal()
         {
             List<ComplexNumber> roots = new List<ComplexNumber>();
 
@@ -69,18 +80,18 @@ namespace INPTPZ1
             {
                 for (int xPosition = 0; xPosition < bitmap.Height; xPosition++)
                 {
-                    ComplexNumber pixelCoordinates = GetPointInWorldCoordinates(xMin, yMin, xStep, yStep, yPosition, xPosition);
+                    ComplexNumber pixelCoordinates = GetPointInWorldCoordinates(xPosition, yPosition);
 
                     int numberOfIterations = GetNumberOfIterationInNewtonMethod(polynomial, derivativePolynomial, ref pixelCoordinates);
 
                     int rootNumberId = FindRootNumberIndex(roots, pixelCoordinates);
 
-                    ColorizePixel(bitmap, xPosition, yPosition, numberOfIterations, rootNumberId);
+                    ColorizePixel(xPosition, yPosition, numberOfIterations, rootNumberId);
                 }
             }
         }
 
-        private static int GetNumberOfIterationInNewtonMethod(Polynomial polynomial, Polynomial derivativePolynomial, ref ComplexNumber pixelCoordinates)
+        private int GetNumberOfIterationInNewtonMethod(Polynomial polynomial, Polynomial derivativePolynomial, ref ComplexNumber pixelCoordinates)
         {
             int numberOfIterations = 0;
             for (int i = 0; i < MAXIMUM_ITERATIONS_IN_NEWTONS_METHOD; i++)
@@ -98,10 +109,10 @@ namespace INPTPZ1
             return numberOfIterations;
         }
 
-        private static ComplexNumber GetPointInWorldCoordinates(double xMin, double yMin, double xStep, double yStep, int yPosition, int xPosition)
+        private ComplexNumber GetPointInWorldCoordinates(int xPosition, int yPosition)
         {
-            double y = yMin + yPosition * yStep;
             double x = xMin + xPosition * xStep;
+            double y = yMin + yPosition * yStep;
 
             ComplexNumber pixelCoordinates = new ComplexNumber()
             {
@@ -116,7 +127,7 @@ namespace INPTPZ1
             return pixelCoordinates;
         }
 
-        private static int FindRootNumberIndex(List<ComplexNumber> roots, ComplexNumber pixelCoordinates)
+        private int FindRootNumberIndex(List<ComplexNumber> roots, ComplexNumber pixelCoordinates)
         {
             bool known = false;
             int id = 0;
@@ -138,7 +149,7 @@ namespace INPTPZ1
             return id;
         }
 
-        private static void ColorizePixel(Bitmap bitmap, int xPosition, int yPosition, int numberOfIterations, int rootNumberIndex)
+        private void ColorizePixel(int xPosition, int yPosition, int numberOfIterations, int rootNumberIndex)
         {
             Color[] colors = new Color[]
             {
@@ -156,7 +167,7 @@ namespace INPTPZ1
             bitmap.SetPixel(xPosition, yPosition, color);
         }
 
-        private static void CreatePolynome(out Polynomial polynomial)
+        private void CreatePolynome(out Polynomial polynomial)
         {
             polynomial = new Polynomial();
             polynomial.Coefficients.Add(new ComplexNumber() { Re = 1 });
