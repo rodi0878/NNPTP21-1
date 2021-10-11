@@ -5,15 +5,13 @@
         public double X { get; set; }
         public double Y { get; set; }
 
-        public int XAsInt { get; set; }
-        public int YAsInt { get; set; }
+        public int XAsInt { get => (int) X; set => X = value; }
+        public int YAsInt { get => (int) Y; set => Y = value; }
 
         public Point2D(double x, double y)
         {
             X = x;
-            XAsInt = (int)x;
             Y = y;
-            YAsInt = (int)y;
         }
     }
 }
