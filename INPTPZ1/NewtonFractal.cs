@@ -41,8 +41,8 @@ namespace INPTPZ1
             {
                 for (int j = 0; j < imageHeight; j++)
                 {
-                    ComplexNumber pixelInWorldCoordinates = GetPointInWorldCoordinates(xmin, ymin, xstep, ystep, i, j);
-                    int iteration = FindSolutionUsingNewtonIterationMethod(polynomial, polynomialDerived, ref pixelInWorldCoordinates);
+                    ComplexNumber pixelInWorldCoordinates = GetPointInWorldCoordinates(i, j);
+                    int iteration = FindSolutionUsingNewtonIterationMethod(ref pixelInWorldCoordinates);
                     int index = FindRootIndex(roots, pixelInWorldCoordinates);
                     ColorizePixel(bitmapImage, i, j, iteration, index);
                 }
@@ -99,7 +99,7 @@ namespace INPTPZ1
             bitmapImage.SetPixel(j, i, color);
         }
 
-        private static int FindSolutionUsingNewtonIterationMethod(Polynomial polynomial, Polynomial polynomialDerived, ref ComplexNumber pixelInWorldCoordinates)
+        private static int FindSolutionUsingNewtonIterationMethod(ref ComplexNumber pixelInWorldCoordinates)
         {
             int iterationCount = 0;
             for (int i = 0; i < NEWTON_ITERATION_THRESHOLD; i++)
@@ -115,7 +115,7 @@ namespace INPTPZ1
             return iterationCount;
         }
 
-        private static ComplexNumber GetPointInWorldCoordinates(double xmin, double ymin, double xstep, double ystep, int i, int j)
+        private static ComplexNumber GetPointInWorldCoordinates(int i, int j)
         {
             ComplexNumber pointInWorldCoordinates = new ComplexNumber()
             {
