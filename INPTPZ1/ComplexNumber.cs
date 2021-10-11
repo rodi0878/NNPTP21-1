@@ -47,7 +47,7 @@ namespace INPTPZ1
                 return new ComplexNumber()
                 {
                     Re = Re * secondNumber.Re - Im * secondNumber.Im,
-                    Im = (float)(Re * secondNumber.Im + Im * secondNumber.Re)
+                    Im = Re * secondNumber.Im + Im * secondNumber.Re
                 };
             }
 
@@ -68,7 +68,7 @@ namespace INPTPZ1
                 return new ComplexNumber()
                 {
                     Re = dividedNumber.Re / divisor,
-                    Im = (float)(dividedNumber.Im / divisor)
+                    Im = dividedNumber.Im / divisor
                 };
             }
             public double GetAbsoluteValue()
