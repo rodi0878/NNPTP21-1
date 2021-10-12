@@ -15,7 +15,7 @@ namespace INPTPZ1.Mathematics.Tests
             {
                 Real = 10,
                 Imaginary = 20
-            };  
+            };
         }
 
         [TestMethod()]
