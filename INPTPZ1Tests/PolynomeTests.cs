@@ -15,7 +15,7 @@ namespace INPTPZ1.Mathematics.Tests
                 Coefficients =
                 {
                     new ComplexNumber() { Real = 1, Imaginary = 0 },
-                    ComplexNumber.Zero,
+                    ComplexNumber.ZERO,
                     new ComplexNumber() { Real = 1, Imaginary = 0 },
 
                 }

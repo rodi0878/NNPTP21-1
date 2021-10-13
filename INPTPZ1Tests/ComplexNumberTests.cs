@@ -79,7 +79,7 @@ namespace INPTPZ1.Mathematics.Tests
         [TestMethod()]
         public void TestComplexNumberZero()
         {
-            ComplexNumber result = ComplexNumber.Zero;
+            ComplexNumber result = ComplexNumber.ZERO;
             ComplexNumber expected = new ComplexNumber()
             {
                 Real = 0,

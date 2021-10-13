@@ -37,7 +37,7 @@ namespace INPTPZ1
 
             public ComplexNumber Evaluate(ComplexNumber pointOfEvaluation)
             {
-                ComplexNumber result = ComplexNumber.Zero;
+                ComplexNumber result = ComplexNumber.ZERO;
                 for (int i = 0; i < Coefficients.Count; i++)
                 {
                     ComplexNumber coefficient = Coefficients[i];

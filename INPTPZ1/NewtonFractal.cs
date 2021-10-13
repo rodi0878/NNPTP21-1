@@ -11,6 +11,7 @@ namespace INPTPZ1
         private const double ACCURACY_OF_ROOT_INDEX_TOLERANCE = 0.01;
         private const string DEFAULT_OUTPUT_FILE = "../../../out.png";
         private const double ACCURACY_OF_FINDING_NUMBER_OF_ITERATIONS = 0.5;
+        private const double ZERO_SUBSTITUTE_VALUE = 0.0001;
         private readonly Color[] COLORS = new Color[]
         {
             Color.Red, Color.Blue, Color.Green, Color.Yellow, Color.Orange, Color.Fuchsia, Color.Gold, Color.Cyan, Color.Magenta
@@ -32,7 +33,7 @@ namespace INPTPZ1
         {
             newtonFractalBitmap = new Bitmap(imageWidth, imageHeight);
             List<ComplexNumber> roots = new List<ComplexNumber>();
-            InitializePolynome();
+            InitializePolynomes();
             for (int x = 0; x < imageWidth; x++)
             {
                 for (int y = 0; y < imageHeight; y++)
@@ -46,6 +47,20 @@ namespace INPTPZ1
             newtonFractalBitmap.Save(outputFile ?? DEFAULT_OUTPUT_FILE);
         }
 
+        private void InitializePolynomes()
+        {
+            polynome = new Polynome()
+            {
+                Coefficients = {
+                    new ComplexNumber() { Real = 1 },
+                    ComplexNumber.ZERO,
+                    ComplexNumber.ZERO,
+                    new ComplexNumber() { Real = 1 }
+                }
+            };
+            derivedPolynome = polynome.Derive();
+        }
+
         private ComplexNumber GetPixelRealWorldCoordinates(int x, int y)
         {
             ComplexNumber pixelCoordinates = new ComplexNumber()
@@ -57,41 +72,17 @@ namespace INPTPZ1
             return pixelCoordinates;
         }
 
-        private void SetPixelColorFromRootIndex(int x, int y, int rootIndex, int numberOfIterations)
-        {
-            Color color = COLORS[rootIndex % COLORS.Length];
-            color = Color.FromArgb(
-              Math.Min(Math.Max(0, color.R - numberOfIterations * 2), 255),
-              Math.Min(Math.Max(0, color.G - numberOfIterations * 2), 255),
-              Math.Min(Math.Max(0, color.B - numberOfIterations * 2), 255)
-            );
-            newtonFractalBitmap.SetPixel(y, x, color);
-        }
-
         private void CheckIfPixelCoordinatesIsZeroAndFixThem(ref ComplexNumber pixelCoordinates)
         {
             if (pixelCoordinates.Real == 0)
             {
-                pixelCoordinates.Real = 0.0001;
+                pixelCoordinates.Real = ZERO_SUBSTITUTE_VALUE;
             }
 
             if (pixelCoordinates.Imaginary == 0)
             {
-                pixelCoordinates.Imaginary = 0.0001f;
+                pixelCoordinates.Imaginary = ZERO_SUBSTITUTE_VALUE;
             }
-        }
-
-        private int FindRootIndex(List<ComplexNumber> roots, ComplexNumber pixelCoordinates)
-        {
-            for (int i = 0; i < roots.Count; i++)
-            {
-                if (Math.Pow(pixelCoordinates.Real - roots[i].Real, 2) + Math.Pow(pixelCoordinates.Imaginary - roots[i].Imaginary, 2) <= ACCURACY_OF_ROOT_INDEX_TOLERANCE)
-                {
-                    return i;
-                }
-            }
-            roots.Add(pixelCoordinates);
-            return roots.Count;
         }
 
         private int FindNumberOfIterationsByUsingNewtonsIteration(ref ComplexNumber pixelCoordinates)
@@ -110,19 +101,28 @@ namespace INPTPZ1
             return iterationsCount;
         }
 
-        private void InitializePolynome()
+        private int FindRootIndex(List<ComplexNumber> roots, ComplexNumber pixelCoordinates)
         {
-            polynome = new Polynome()
+            for (int i = 0; i < roots.Count; i++)
             {
-                Coefficients = {
-          new ComplexNumber() { Real = 1 },
-          ComplexNumber.Zero,
-          ComplexNumber.Zero,
-          new ComplexNumber() {Real = 1}
+                if (Math.Pow(pixelCoordinates.Real - roots[i].Real, 2) + Math.Pow(pixelCoordinates.Imaginary - roots[i].Imaginary, 2) <= ACCURACY_OF_ROOT_INDEX_TOLERANCE)
+                {
+                    return i;
+                }
+            }
+            roots.Add(pixelCoordinates);
+            return roots.Count;
         }
-            };
 
-            derivedPolynome = polynome.Derive();
+        private void SetPixelColorFromRootIndex(int x, int y, int rootIndex, int numberOfIterations)
+        {
+            Color color = COLORS[rootIndex % COLORS.Length];
+            color = Color.FromArgb(
+              Math.Min(Math.Max(0, color.R - numberOfIterations * 2), 255),
+              Math.Min(Math.Max(0, color.G - numberOfIterations * 2), 255),
+              Math.Min(Math.Max(0, color.B - numberOfIterations * 2), 255)
+            );
+            newtonFractalBitmap.SetPixel(y, x, color);
         }
 
         private void ParseArguments(string[] args)

@@ -7,24 +7,14 @@ namespace INPTPZ1
     {
         public class ComplexNumber
         {
-            public double Real { get; set; }
-            public double Imaginary { get; set; }
-
-            public override bool Equals(object obj)
-            {
-                if (obj is ComplexNumber)
-                {
-                    ComplexNumber complexNumber = obj as ComplexNumber;
-                    return complexNumber.Real == Real && complexNumber.Imaginary == Imaginary;
-                }
-                return base.Equals(obj);
-            }
-
-            public readonly static ComplexNumber Zero = new ComplexNumber()
+            public readonly static ComplexNumber ZERO = new ComplexNumber()
             {
                 Real = 0,
                 Imaginary = 0
             };
+
+            public double Real { get; set; }
+            public double Imaginary { get; set; }
 
             public ComplexNumber Add(ComplexNumber complexNumberToAdd)
             {
@@ -49,11 +39,11 @@ namespace INPTPZ1
                 return new ComplexNumber()
                 {
                     Real = this.Real * complexNumberToMultiply.Real - this.Imaginary * complexNumberToMultiply.Imaginary,
-                    Imaginary = (this.Real * complexNumberToMultiply.Imaginary + this.Imaginary * complexNumberToMultiply.Real)
+                    Imaginary = this.Real * complexNumberToMultiply.Imaginary + this.Imaginary * complexNumberToMultiply.Real
                 };
             }
 
-            internal ComplexNumber Divide(ComplexNumber complexNumberToDivide)
+            public ComplexNumber Divide(ComplexNumber complexNumberToDivide)
             {
                 var dividedNumber = this.Multiply(new ComplexNumber() { Real = complexNumberToDivide.Real, Imaginary = -complexNumberToDivide.Imaginary });
                 var divisor = complexNumberToDivide.Real * complexNumberToDivide.Real + complexNumberToDivide.Imaginary * complexNumberToDivide.Imaginary;
@@ -78,6 +68,16 @@ namespace INPTPZ1
             public override string ToString()
             {
                 return $"({Real} + {Imaginary}i)";
+            }
+
+            public override bool Equals(object obj)
+            {
+                if (obj is ComplexNumber)
+                {
+                    ComplexNumber complexNumber = obj as ComplexNumber;
+                    return complexNumber.Real == Real && complexNumber.Imaginary == Imaginary;
+                }
+                return base.Equals(obj);
             }
 
             public override int GetHashCode()
