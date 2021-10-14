@@ -4,24 +4,28 @@ namespace Mathematics
 {
     public class Polynomial
     {
-        public List<ComplexNumber> CompleNumbersList { get; set; }
+        public List<ComplexNumber> ComplexNumbersList { get; set; }
 
         public Polynomial()
         {
-            CompleNumbersList = new List<ComplexNumber>();
+            ComplexNumbersList = new List<ComplexNumber>();
+        }
+
+        public Polynomial(List<ComplexNumber> list) {
+            ComplexNumbersList = list;
         }
 
         public void Add(ComplexNumber complexNumber)
         {
-            CompleNumbersList.Add(complexNumber);
+            ComplexNumbersList.Add(complexNumber);
         }
 
         public Polynomial Derive()
         {
             Polynomial polynomial = new Polynomial();
-            for (int i = 1; i < CompleNumbersList.Count; i++)
+            for (int i = 1; i < ComplexNumbersList.Count; i++)
             {
-                polynomial.CompleNumbersList.Add(CompleNumbersList[i].Multiply(new ComplexNumber() { RealPart = i }));
+                polynomial.ComplexNumbersList.Add(ComplexNumbersList[i].Multiply(new ComplexNumber() { RealPart = i }));
             }
 
             return polynomial;
@@ -36,9 +40,9 @@ namespace Mathematics
         public ComplexNumber Evaluate(ComplexNumber x)
         {
             ComplexNumber complexNumber = ComplexNumber.Zero;
-            for (int i = 0; i < CompleNumbersList.Count; i++)
+            for (int i = 0; i < ComplexNumbersList.Count; i++)
             {
-                ComplexNumber coefficient = CompleNumbersList[i];
+                ComplexNumber coefficient = ComplexNumbersList[i];
                 ComplexNumber bx = x;
                 int power = i;
 
@@ -59,9 +63,9 @@ namespace Mathematics
         public override string ToString()
         {
             string s = "";
-            for (int i = 0; i < CompleNumbersList.Count; i++)
+            for (int i = 0; i < ComplexNumbersList.Count; i++)
             {
-                s += CompleNumbersList[i];
+                s += ComplexNumbersList[i];
                 if (i > 0)
                 {
                     for (int j = 0; j < i; j++)
@@ -69,7 +73,7 @@ namespace Mathematics
                         s += "x";
                     }
                 }
-                if (i + 1 < CompleNumbersList.Count)
+                if (i + 1 < ComplexNumbersList.Count)
                     s += " + ";
             }
             return s;
