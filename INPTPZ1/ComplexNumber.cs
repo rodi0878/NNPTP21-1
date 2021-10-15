@@ -7,6 +7,7 @@ namespace Mathematics
         public double RealPart { get; set; }
         public double ImaginaryPart { get; set; }
 
+
         public readonly static ComplexNumber Zero = new ComplexNumber()
         {
             RealPart = 0,
