@@ -22,49 +22,52 @@ namespace Mathematics
             }
             return base.Equals(obj);
         }
-
-        public ComplexNumber Multiply(ComplexNumber b)
+        public ComplexNumber Add(ComplexNumber secondNumber)
         {
             return new ComplexNumber()
             {
-                RealPart = this.RealPart * b.RealPart - this.ImaginaryPart * b.ImaginaryPart,
-                ImaginaryPart = this.RealPart * b.ImaginaryPart + this.ImaginaryPart * b.RealPart
+                RealPart = RealPart + secondNumber.RealPart,
+                ImaginaryPart = ImaginaryPart + secondNumber.ImaginaryPart
             };
         }
 
-        public ComplexNumber Divide(ComplexNumber b)
+        public ComplexNumber Subtract(ComplexNumber secondNumber)
         {
-            ComplexNumber tmp = this.Multiply(new ComplexNumber() { RealPart = b.RealPart, ImaginaryPart = -b.ImaginaryPart });
-            double tmp2 = b.RealPart * b.RealPart + b.ImaginaryPart * b.ImaginaryPart;
+            return new ComplexNumber()
+            {
+                RealPart = RealPart - secondNumber.RealPart,
+                ImaginaryPart = ImaginaryPart - secondNumber.ImaginaryPart
+            };
+        }
+
+        public ComplexNumber Multiply(ComplexNumber secondNumber)
+        {
+            return new ComplexNumber()
+            {
+                RealPart = RealPart * secondNumber.RealPart - ImaginaryPart * secondNumber.ImaginaryPart,
+                ImaginaryPart = RealPart * secondNumber.ImaginaryPart + ImaginaryPart * secondNumber.RealPart
+            };
+        }
+
+        public ComplexNumber Divide(ComplexNumber secondNumber)
+        {
+            ComplexNumber dividedNumber = Multiply(new ComplexNumber() { 
+                RealPart = secondNumber.RealPart, 
+                ImaginaryPart = -secondNumber.ImaginaryPart 
+            });
+
+            double divider = Math.Pow(secondNumber.RealPart, 2) + Math.Pow(secondNumber.ImaginaryPart, 2);
 
             return new ComplexNumber()
             {
-                RealPart = tmp.RealPart / tmp2,
-                ImaginaryPart = tmp.ImaginaryPart / tmp2
+                RealPart = dividedNumber.RealPart / divider,
+                ImaginaryPart = dividedNumber.ImaginaryPart / divider
             };
         }
 
         public double GetAbs()
         {
-            return Math.Sqrt(RealPart * RealPart + ImaginaryPart * ImaginaryPart);
-        }
-
-        public ComplexNumber Add(ComplexNumber b)
-        {
-            return new ComplexNumber()
-            {
-                RealPart = this.RealPart + b.RealPart,
-                ImaginaryPart = this.ImaginaryPart + b.ImaginaryPart
-            };
-        }
-
-        public ComplexNumber Subtract(ComplexNumber b)
-        {
-            return new ComplexNumber()
-            {
-                RealPart = this.RealPart - b.RealPart,
-                ImaginaryPart = this.ImaginaryPart - b.ImaginaryPart
-            };
+            return Math.Sqrt(Math.Pow(RealPart, 2) + Math.Pow(ImaginaryPart, 2));
         }
 
         public double GetAngle()

@@ -31,27 +31,27 @@ namespace Mathematics
             return polynomial;
         }
 
-        public ComplexNumber Evaluate(double x)
+        public ComplexNumber Evaluate(double realPart)
         {
-            ComplexNumber result = Evaluate(new ComplexNumber() { RealPart = x, ImaginaryPart = 0 });
+            ComplexNumber result = Evaluate(new ComplexNumber() { RealPart = realPart, ImaginaryPart = 0 });
             return result;
         }
 
-        public ComplexNumber Evaluate(ComplexNumber x)
+        public ComplexNumber Evaluate(ComplexNumber pointOfEvaluation)
         {
             ComplexNumber complexNumber = ComplexNumber.Zero;
             for (int i = 0; i < ComplexNumbersList.Count; i++)
             {
                 ComplexNumber coefficient = ComplexNumbersList[i];
-                ComplexNumber bx = x;
+                ComplexNumber copyPoint = pointOfEvaluation;
                 int power = i;
 
                 if (i > 0)
                 {
                     for (int j = 0; j < power - 1; j++)
-                        bx = bx.Multiply(x);
+                        copyPoint = copyPoint.Multiply(pointOfEvaluation);
 
-                    coefficient = coefficient.Multiply(bx);
+                    coefficient = coefficient.Multiply(copyPoint);
                 }
 
                 complexNumber = complexNumber.Add(coefficient);
@@ -62,21 +62,21 @@ namespace Mathematics
 
         public override string ToString()
         {
-            string s = "";
+            string result = "";
             for (int i = 0; i < ComplexNumbersList.Count; i++)
             {
-                s += ComplexNumbersList[i];
+                result += ComplexNumbersList[i];
                 if (i > 0)
                 {
                     for (int j = 0; j < i; j++)
                     {
-                        s += "x";
+                        result += "x";
                     }
                 }
                 if (i + 1 < ComplexNumbersList.Count)
-                    s += " + ";
+                    result += " + ";
             }
-            return s;
+            return result;
         }
     }
 }
