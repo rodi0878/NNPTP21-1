@@ -8,80 +8,85 @@ namespace INPTPZ1
         public class ComplexNumber
         {
             public double Re { get; set; }
-            public double Imaginari { get; set; }
+            public double Im { get; set; }
 
-            public override bool Equals(object obj)
-            {
-                if (obj is ComplexNumber)
-                {
-                    ComplexNumber x = obj as ComplexNumber;
-                    return x.Re == Re && x.Imaginari == Imaginari;
-                }
-                return base.Equals(obj);
-            }
-
-            public readonly static ComplexNumber Zero = new ComplexNumber()
+            public static readonly ComplexNumber Zero = new ComplexNumber()
             {
                 Re = 0,
-                Imaginari = 0
+                Im = 0
             };
+
+            public override bool Equals(object complexNum)
+            {
+                if (complexNum is ComplexNumber complexNumber)
+                {
+                    return complexNumber.Re == Re && complexNumber.Im == Im;
+                }
+                return base.Equals(complexNum);
+            }
 
             public ComplexNumber Multiply(ComplexNumber b)
             {
-                ComplexNumber a = this;
-                // aRe*bRe + aRe*bIm*i + aIm*bRe*i + aIm*bIm*i*i
                 return new ComplexNumber()
                 {
-                    Re = a.Re * b.Re - a.Imaginari * b.Imaginari,
-                    Imaginari = (float)(a.Re * b.Imaginari + a.Imaginari * b.Re)
+                    Re = Re * b.Re - Im * b.Im,
+                    Im = Re * b.Im + Im * b.Re
                 };
             }
-            public double GetAbS()
+
+            public double GetAbsoluteValue()
             {
-                return Math.Sqrt( Re * Re + Imaginari * Imaginari);
+                return Math.Sqrt(Re * Re + Im * Im);
             }
 
             public ComplexNumber Add(ComplexNumber b)
             {
-                ComplexNumber a = this;
                 return new ComplexNumber()
                 {
-                    Re = a.Re + b.Re,
-                    Imaginari = a.Imaginari + b.Imaginari
+                    Re = Re + b.Re,
+                    Im = Im + b.Im
                 };
             }
-            public double GetAngleInDegrees()
+
+            public double GetAngle()
             {
-                return Math.Atan(Imaginari / Re);
+                return Math.Atan(Im / Re);
             }
+
             public ComplexNumber Subtract(ComplexNumber b)
             {
-                ComplexNumber a = this;
                 return new ComplexNumber()
                 {
-                    Re = a.Re - b.Re,
-                    Imaginari = a.Imaginari - b.Imaginari
+                    Re = Re - b.Re,
+                    Im = Im - b.Im
+                };
+            }
+
+            public ComplexNumber Divide(ComplexNumber divisor)
+            {
+                ComplexNumber numerator = GetNumeratorForDiving(divisor);
+                double denominator = GetDenominatorForDiving(divisor);
+
+                return new ComplexNumber()
+                {
+                    Re = numerator.Re / denominator,
+                    Im = numerator.Im / denominator
                 };
             }
 
             public override string ToString()
             {
-                return $"({Re} + {Imaginari}i)";
+                return $"({Re} + {Im}i)";
             }
 
-            internal ComplexNumber Divide(ComplexNumber b)
+            private ComplexNumber GetNumeratorForDiving(ComplexNumber complexNumber)
             {
-                // (aRe + aIm*i) / (bRe + bIm*i)
-                // ((aRe + aIm*i) * (bRe - bIm*i)) / ((bRe + bIm*i) * (bRe - bIm*i))
-                //  bRe*bRe - bIm*bIm*i*i
-                var tmp = this.Multiply(new ComplexNumber() { Re = b.Re, Imaginari = -b.Imaginari });
-                var tmp2 = b.Re * b.Re + b.Imaginari * b.Imaginari;
+                return Multiply(new ComplexNumber() { Re = complexNumber.Re, Im = -complexNumber.Im });
+            }
 
-                return new ComplexNumber()
-                {
-                    Re = tmp.Re / tmp2,
-                    Imaginari = (float)(tmp.Imaginari / tmp2)
-                };
+            private double GetDenominatorForDiving(ComplexNumber complexNumber)
+            {
+                return complexNumber.Re * complexNumber.Re + complexNumber.Im * complexNumber.Im;
             }
         }
     }
