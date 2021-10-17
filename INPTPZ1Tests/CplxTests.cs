@@ -53,7 +53,7 @@ namespace INPTPZ1.Mathematics.Tests
         [TestMethod()]
         public void AddTestPolynome()
         {
-            Polynom poly = new Mathematics.Polynom();
+            Polynomial poly = new Mathematics.Polynomial();
             poly.Coeficients.Add(new ComplexNumber(1,0));
             poly.Coeficients.Add(new ComplexNumber(0,0));
             poly.Coeficients.Add(new ComplexNumber(1,0));

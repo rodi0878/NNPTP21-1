@@ -4,12 +4,10 @@ namespace INPTPZ1 {
 
     namespace Mathematics {
         public class ComplexNumber
-        {
-          
+        {        
             public double Re { get; set; }
             public double Im { get; set; }
 
-            /*TOM kouknout na logiku metod, nejde to udelat lepe? poměrně složité jsou tam dvě čísla a nějaké složité vzorečky */
           public   ComplexNumber(double Re, double Im) {
                 this.Re = Re;
                 this.Im = Im;
@@ -20,42 +18,34 @@ namespace INPTPZ1 {
             {
                 if (obj is ComplexNumber)
                 {
-                    ComplexNumber x = obj as ComplexNumber;
-                    return x.Re == Re && x.Im == Im;
+                    ComplexNumber complexNumber = obj as ComplexNumber;
+                    return complexNumber.Re == Re && complexNumber.Im == Im;
                 }
                 return base.Equals(obj);
             }
 
 
-            public ComplexNumber Multiply(ComplexNumber b)
+            public ComplexNumber Multiply(ComplexNumber factor)
             {
-                return new ComplexNumber(this.Re * b.Re - this.Im * b.Im, this.Re * b.Im + this.Im * b.Re);
-           /*     {
-                    Re = a.Re * b.Re - a.Im * b.Im,
-                    Im = a.Re * b.Im + a.Im * b.Re
-                };*/
+                return new ComplexNumber(this.Re * factor.Re - this.Im * factor.Im, this.Re * factor.Im + this.Im * factor.Re);
             }
-            public double GetAbs()
+            public double GetAbsoluteValue()
             {
                 return Math.Sqrt( Re * Re + Im * Im);
             }
-            //TOM - jenomGetAngle
+
             public double GetAngleInRadian() {
                 return Math.Atan(Im / Re);
             }
 
-            public ComplexNumber Add(ComplexNumber b)
+            public ComplexNumber Add(ComplexNumber addition)
             {
-                return new ComplexNumber(this.Re + b.Re, this.Im + b.Im);
-              /*  {
-                    Re = a.Re + b.Re,
-                    Im = a.Im + b.Im
-                };*/
+                return new ComplexNumber(this.Re + addition.Re, this.Im + addition.Im);
             }
          
-            public ComplexNumber Subtract(ComplexNumber b)
+            public ComplexNumber Subtract(ComplexNumber reducer)
             {
-                return new ComplexNumber(this.Re - b.Re, this.Im - b.Im);
+                return new ComplexNumber(this.Re - reducer.Re, this.Im - reducer.Im);
             }
 
             public override string ToString()
@@ -63,15 +53,11 @@ namespace INPTPZ1 {
                 return $"({Re} + {Im}i)";
             }
 
-            /*TOM - TMP lépe pojmenovat nebo nějak jinak vyřešit?? tmp tmp2*/
-
-            public ComplexNumber Divide(ComplexNumber b)
+            public ComplexNumber Divide(ComplexNumber divisor)
             {   
-                                var numerator = this.Multiply(new ComplexNumber(b.Re, -b.Im));
-                                var denumerator = b.Re * b.Re + b.Im * b.Im;
-
-                return new ComplexNumber(numerator.Re / denumerator, numerator.Im / denumerator);
-           
+                                var numerator = this.Multiply(new ComplexNumber(divisor.Re, -divisor.Im));
+                                var denumerator = divisor.Re * divisor.Re + divisor.Im * divisor.Im;
+                return new ComplexNumber(numerator.Re / denumerator, numerator.Im / denumerator);         
             }
         }
     }

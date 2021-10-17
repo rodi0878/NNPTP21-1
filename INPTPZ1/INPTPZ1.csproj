@@ -44,7 +44,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ComplexNumber.cs" />
-    <Compile Include="Polynom.cs" />
+    <Compile Include="Image.cs" />
+    <Compile Include="Point.cs" />
+    <Compile Include="Polynomial.cs" />
     <Compile Include="NewtonFractal.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
