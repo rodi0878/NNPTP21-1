@@ -5,7 +5,7 @@ using System.Drawing;
 
 namespace INPTPZ1
 {
-    class NewtonFractal
+    public class NewtonFractal
     {
         private List<ComplexNumber> roots = new List<ComplexNumber>();
 
@@ -18,13 +18,13 @@ namespace INPTPZ1
         private Polynome derivedPolynome;
         private ComplexNumber ox;
 
-        private int [] intargs;
+        private int[] intargs;
         private double[] doubleargs;
-        
-        private Bitmap bmpOutput;
-        
 
-        public NewtonFractal(string []args)
+        private Bitmap bmpOutput;
+
+
+        public NewtonFractal(string[] args)
         {
             polynome = new Polynome();
             polynome.Coeficients.Add(new ComplexNumber() { Real = 1 });
@@ -39,7 +39,7 @@ namespace INPTPZ1
             ParseArgs(args);
         }
 
-        public Bitmap CreateNewtonFractal ()
+        public Bitmap CreateNewtonFractal()
         {
             PrepareBmpOutput();
             ColorizeBmpOutput();

@@ -1,5 +1,4 @@
 ﻿using System.Drawing;
-using Mathematics;
 
 namespace INPTPZ1
 {

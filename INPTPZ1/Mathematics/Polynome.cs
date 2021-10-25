@@ -2,7 +2,7 @@
 
 namespace Mathematics
 {
-    class Polynome
+    public class Polynome
     {
         /// <summary>
         /// Coeficients
