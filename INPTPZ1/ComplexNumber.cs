@@ -16,29 +16,6 @@ namespace INPTPZ1
                 Im = 0
             };
 
-            public override bool Equals(object complexNum)
-            {
-                if (complexNum is ComplexNumber complexNumber)
-                {
-                    return complexNumber.Re == Re && complexNumber.Im == Im;
-                }
-                return base.Equals(complexNum);
-            }
-
-            public ComplexNumber Multiply(ComplexNumber b)
-            {
-                return new ComplexNumber()
-                {
-                    Re = Re * b.Re - Im * b.Im,
-                    Im = Re * b.Im + Im * b.Re
-                };
-            }
-
-            public double GetAbsoluteValue()
-            {
-                return Math.Sqrt(Re * Re + Im * Im);
-            }
-
             public ComplexNumber Add(ComplexNumber b)
             {
                 return new ComplexNumber()
@@ -48,17 +25,21 @@ namespace INPTPZ1
                 };
             }
 
-            public double GetAngle()
-            {
-                return Math.Atan(Im / Re);
-            }
-
             public ComplexNumber Subtract(ComplexNumber b)
             {
                 return new ComplexNumber()
                 {
                     Re = Re - b.Re,
                     Im = Im - b.Im
+                };
+            }
+
+            public ComplexNumber Multiply(ComplexNumber b)
+            {
+                return new ComplexNumber()
+                {
+                    Re = Re * b.Re - Im * b.Im,
+                    Im = Re * b.Im + Im * b.Re
                 };
             }
 
@@ -72,6 +53,25 @@ namespace INPTPZ1
                     Re = numerator.Re / denominator,
                     Im = numerator.Im / denominator
                 };
+            }
+
+            public double GetAbsoluteValue()
+            {
+                return Math.Sqrt(Re * Re + Im * Im);
+            }
+
+            public double GetAngle()
+            {
+                return Math.Atan(Im / Re);
+            }
+
+            public override bool Equals(object complexNum)
+            {
+                if (complexNum is ComplexNumber complexNumber)
+                {
+                    return complexNumber.Re == Re && complexNumber.Im == Im;
+                }
+                return base.Equals(complexNum);
             }
 
             public override string ToString()

@@ -16,10 +16,11 @@ namespace INPTPZ1
         public double YMax { get; set; }
         public double XStep { get; set; }
         public double YStep { get; set; }
-        public Bitmap OutputBitmap { get; set; }
-        public List<ComplexNumber> Roots { get; set; }
-        public Polynomial Polynomial { get; set; }
-        public Polynomial DerivedPolynomial { get; set; }
+        public Bitmap OutputBitmap { get; private set; }
+
+        private Polynomial polynomial;
+        private Polynomial derivedPolynomial;
+        private List<ComplexNumber> roots;
 
         public NewtonFractal(string[] args)
         {
@@ -73,17 +74,17 @@ namespace INPTPZ1
                 Color.Red, Color.Blue, Color.Green, Color.Yellow, Color.Orange, Color.Fuchsia, Color.Gold, Color.Cyan, Color.Magenta
             };
 
-            Roots = new List<ComplexNumber>();
+            roots = new List<ComplexNumber>();
         }
 
         private void SetPolynomialNumbers()
         {
-            Polynomial = new Polynomial();
-            Polynomial.Coefficients.Add(new ComplexNumber() { Re = 1 });
-            Polynomial.Coefficients.Add(ComplexNumber.Zero);
-            Polynomial.Coefficients.Add(ComplexNumber.Zero);
-            Polynomial.Coefficients.Add(new ComplexNumber() { Re = 1 });
-            DerivedPolynomial = Polynomial.Derive();
+            polynomial = new Polynomial();
+            polynomial.Coefficients.Add(new ComplexNumber() { Re = 1 });
+            polynomial.Coefficients.Add(ComplexNumber.Zero);
+            polynomial.Coefficients.Add(ComplexNumber.Zero);
+            polynomial.Coefficients.Add(new ComplexNumber() { Re = 1 });
+            derivedPolynomial = polynomial.Derive();
         }
 
         private void RecreateZeroComplexNumber(ComplexNumber complexNumber)
@@ -103,7 +104,7 @@ namespace INPTPZ1
             int iteration = 0;
             for (int i = 0; i < MAX_ITERATION; i++)
             {
-                ComplexNumber diff = Polynomial.Evaluate(complexNumber).Divide(DerivedPolynomial.Evaluate(complexNumber));
+                ComplexNumber diff = polynomial.Evaluate(complexNumber).Divide(derivedPolynomial.Evaluate(complexNumber));
                 complexNumber = complexNumber.Subtract(diff);
 
                 if (Math.Pow(diff.Re, 2) + Math.Pow(diff.Im, 2) >= 0.5)
@@ -119,7 +120,7 @@ namespace INPTPZ1
         {
             bool known = false;
             int rootNumber = 0;
-            for (int i = 0; i < Roots.Count; i++)
+            for (int i = 0; i < roots.Count; i++)
             {
                 if (IsDistanceOfReAndImFromRootInTolerance(complexNumber, i))
                 {
@@ -129,15 +130,15 @@ namespace INPTPZ1
             }
             if (!known)
             {
-                Roots.Add(complexNumber);
-                rootNumber = Roots.Count;
+                roots.Add(complexNumber);
+                rootNumber = roots.Count;
             }
             return rootNumber;
         }
 
         private bool IsDistanceOfReAndImFromRootInTolerance(ComplexNumber complexNumber, int indexOfRoot)
         {
-            return Math.Pow(complexNumber.Re - Roots[indexOfRoot].Re, 2) + Math.Pow(complexNumber.Im - Roots[indexOfRoot].Im, 2) <= 0.01;
+            return Math.Pow(complexNumber.Re - roots[indexOfRoot].Re, 2) + Math.Pow(complexNumber.Im - roots[indexOfRoot].Im, 2) <= 0.01;
         }
 
         private Color GetColorForPixel(int iteration, int rootNumber)

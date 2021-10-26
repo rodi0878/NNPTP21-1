@@ -41,7 +41,7 @@ namespace INPTPZ1
                 ComplexNumber newComplexNumber = ComplexNumber.Zero;
                 for (int i = 0; i < Coefficients.Count; i++)
                 {
-                    ComplexNumber coef = Coefficients[i];
+                    ComplexNumber coefficient = Coefficients[i];
                     ComplexNumber bx = pointOfEvaluation;
                     if (i > 0)
                     {
@@ -50,9 +50,9 @@ namespace INPTPZ1
                             bx = bx.Multiply(pointOfEvaluation);
                         }
 
-                        coef = coef.Multiply(bx);
+                        coefficient = coefficient.Multiply(bx);
                     }
-                    newComplexNumber = newComplexNumber.Add(coef);
+                    newComplexNumber = newComplexNumber.Add(coefficient);
                 }
                 return newComplexNumber;
             }
