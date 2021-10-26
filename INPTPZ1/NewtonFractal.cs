@@ -34,17 +34,18 @@ namespace INPTPZ1
             Color.Magenta 
         };
 
-        public NewtonFractal(string[] args)
+        public NewtonFractal(Resolution resolution, Point2D xPoint, Point2D yPoint)
         {
-            resolution = new Resolution(int.Parse(args[0]), int.Parse(args[1]));
-            xPoint = new Point2D(double.Parse(args[2]), double.Parse(args[3]));
-            yPoint = new Point2D(double.Parse(args[4]), double.Parse(args[5]));
-            String filename = args[6];
+            this.resolution = resolution;
+            this.xPoint = xPoint;
+            this.yPoint = yPoint;
+            
 
             SetBitmapAndSteps();
             CreatePolynomialAndPolynomialDerived();
             CreateNewtonFractal();
-
+        }
+        public void SaveFractalAsImage(string filename) {
             bitmap.Save(filename ?? DefaultFilename);
         }
 
@@ -134,21 +135,21 @@ namespace INPTPZ1
             return iteration;
         }
 
-        private ComplexNumber FindWorldCoordinatesOfPixel(int i, int j)
+        private ComplexNumber FindWorldCoordinatesOfPixel(int y, int x)
         {
-            double y = yPoint.X + i * yStep;
-            double x = xPoint.X + j * xStep;
+            double imaginaryPart = yPoint.X + y * yStep;
+            double realPart = xPoint.X + x * xStep;
 
             ComplexNumber complexNumber = new ComplexNumber()
             {
-                RealPart = x,
-                ImaginaryPart = y
+                RealPart = realPart,
+                ImaginaryPart = imaginaryPart
             };
 
             if (complexNumber.RealPart == 0)
                 complexNumber.RealPart = 0.0001;
             if (complexNumber.ImaginaryPart == 0)
-                complexNumber.ImaginaryPart = 0.0001f;
+                complexNumber.ImaginaryPart = 0.0001;
 
             return complexNumber;
         }

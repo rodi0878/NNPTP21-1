@@ -11,7 +11,14 @@ namespace INPTPZ1
         static void Main(string[] args)
         {
             try {
-                NewtonFractal newtonFractal = new NewtonFractal(args);
+                NewtonFractal newtonFractal = new NewtonFractal(
+                        new Resolution(int.Parse(args[0]), int.Parse(args[1])),
+                        new Point2D(double.Parse(args[2]), double.Parse(args[3])),
+                        new Point2D(double.Parse(args[4]), double.Parse(args[5]))
+                    );
+
+                newtonFractal.SaveFractalAsImage(args[6]);
+
             } catch (Exception exception) {
                 Console.WriteLine(exception);
             }
