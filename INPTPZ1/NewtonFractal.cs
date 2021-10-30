@@ -7,36 +7,52 @@ namespace INPTPZ1
 {
     public class NewtonFractal
     {
-        private List<ComplexNumber> roots = new List<ComplexNumber>();
-
-        private Color[] colors = new Color[]
+        private readonly Color[] colors = new Color[]
         {
                 Color.Red, Color.Blue, Color.Green, Color.Yellow, Color.Orange, Color.Fuchsia, Color.Gold, Color.Cyan, Color.Magenta
         };
+
+        private int width;
+        private int height;
+
+        private double xmin;
+        private double xmax;
+        private double ymin;
+        private double ymax;
+
+        private double xstep;
+        private double ystep;
+
+        private List<ComplexNumber> roots = new List<ComplexNumber>();
 
         private Polynome polynome;
         private Polynome derivedPolynome;
         private ComplexNumber ox;
 
-        private int[] intargs;
-        private double[] doubleargs;
-
         private Bitmap bmpOutput;
 
-
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="args">new instance of NewtonFractal class</param>
         public NewtonFractal(string[] args)
+        {
+            CreateDefaultPolynome();
+            derivedPolynome = polynome.Derive();
+
+            Console.WriteLine(polynome);
+            Console.WriteLine(derivedPolynome);
+            ParseArgs(args);
+        }
+
+
+        private void CreateDefaultPolynome()
         {
             polynome = new Polynome();
             polynome.Coeficients.Add(new ComplexNumber() { Real = 1 });
             polynome.Coeficients.Add(ComplexNumber.Zero);
             polynome.Coeficients.Add(ComplexNumber.Zero);
             polynome.Coeficients.Add(new ComplexNumber() { Real = 1 });
-
-            derivedPolynome = polynome.Derive();
-
-            Console.WriteLine(polynome);
-            Console.WriteLine(derivedPolynome);
-            ParseArgs(args);
         }
 
         public Bitmap CreateNewtonFractal()
@@ -48,50 +64,58 @@ namespace INPTPZ1
 
         private void ParseArgs(string[] args)
         {
-            intargs = new int[2];
+            int[] intargs = new int[2];
             for (int i = 0; i < intargs.Length; i++)
             {
                 intargs[i] = int.Parse(args[i]);
             }
-            doubleargs = new double[4];
+
+            double[] doubleargs = new double[4];
             for (int i = 0; i < doubleargs.Length; i++)
             {
                 doubleargs[i] = double.Parse(args[i + 2]);
             }
+
+            width = intargs[0];
+            height = intargs[1];
+
+            xmin = doubleargs[0];
+            xmax = doubleargs[1];
+            ymin = doubleargs[2];
+            ymax = doubleargs[3];
+
+            xstep = (xmax - xmin) / width;
+            ystep = (ymax - ymin) / height;
         }
 
         private void PrepareBmpOutput()
         {
-            bmpOutput = new Bitmap(intargs[0], intargs[1]);
+            bmpOutput = new Bitmap(width, height);
+        }
+
+        private ComplexNumber CreateComplexNumberAndEditZeroParams(double real, double imaginary)
+        {
+            ComplexNumber complexNumber = new ComplexNumber { Real = real, Imaginary = imaginary };
+            
+            if (complexNumber.Real == 0)
+                complexNumber.Real = 0.0001;
+            if (complexNumber.Imaginary == 0)
+                complexNumber.Imaginary = 0.0001f;
+
+            return complexNumber;
+
         }
 
         private void ColorizeBmpOutput()
         {
-            double xmin = doubleargs[0];
-            double xmax = doubleargs[1];
-            double ymin = doubleargs[2];
-            double ymax = doubleargs[3];
-
-            double xstep = (xmax - xmin) / intargs[0];
-            double ystep = (ymax - ymin) / intargs[1];
-
-            for (int i = 0; i < intargs[0]; i++)
+            for (int i = 0; i < width; i++)
             {
-                for (int j = 0; j < intargs[1]; j++)
+                for (int j = 0; j < height; j++)
                 {
                     double y = ymin + i * ystep;
                     double x = xmin + j * xstep;
 
-                    ox = new ComplexNumber()
-                    {
-                        Real = x,
-                        Imaginari = y
-                    };
-
-                    if (ox.Real == 0)
-                        ox.Real = 0.0001;
-                    if (ox.Imaginari == 0)
-                        ox.Imaginari = 0.0001f;
+                    ox = CreateComplexNumberAndEditZeroParams(x, y);
 
                     int it = DoNewtonMethod();
 
@@ -110,7 +134,7 @@ namespace INPTPZ1
                 var diff = polynome.Evaluate(ox).Divide(derivedPolynome.Evaluate(ox));
                 ox = ox.Subtract(diff);
 
-                if (Math.Pow(diff.Real, 2) + Math.Pow(diff.Imaginari, 2) >= 0.5)
+                if (Math.Pow(diff.Real, 2) + Math.Pow(diff.Imaginary, 2) >= 0.5)
                 {
                     i--;
                 }
@@ -123,30 +147,29 @@ namespace INPTPZ1
         private int FindSolutionRootNumber()
         {
             var known = false;
-            var id = 0;
+            var index = 0;
             for (int w = 0; w < roots.Count; w++)
             {
-                if (Math.Pow(ox.Real - roots[w].Real, 2) + Math.Pow(ox.Imaginari - roots[w].Imaginari, 2) <= 0.01)
+                if (Math.Pow(ox.Real - roots[w].Real, 2) + Math.Pow(ox.Imaginary - roots[w].Imaginary, 2) <= 0.01)
                 {
                     known = true;
-                    id = w;
+                    index = w;
                 }
             }
             if (!known)
             {
                 roots.Add(ox);
-                id = roots.Count;
+                index = roots.Count;
             }
 
-            return id;
+            return index;
         }
 
         private void ColorizePixel(int id, int it, int i, int j)
         {
-            Color vv = colors[id % colors.Length];
-            vv = Color.FromArgb(vv.R, vv.G, vv.B);
-            vv = Color.FromArgb(Math.Min(Math.Max(0, vv.R - it * 2), 255), Math.Min(Math.Max(0, vv.G - it * 2), 255), Math.Min(Math.Max(0, vv.B - it * 2), 255));
-            bmpOutput.SetPixel(j, i, vv);
+            Color colorForPixel = colors[id % colors.Length];
+            colorForPixel = Color.FromArgb(Math.Min(Math.Max(0, colorForPixel.R - it * 2), 255), Math.Min(Math.Max(0, colorForPixel.G - it * 2), 255), Math.Min(Math.Max(0, colorForPixel.B - it * 2), 255));
+            bmpOutput.SetPixel(j, i, colorForPixel);
         }
     }
 }

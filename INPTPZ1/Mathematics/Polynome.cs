@@ -17,6 +17,10 @@ namespace Mathematics
             Coeficients = new List<ComplexNumber>();
         }
 
+        /// <summary>
+        /// Add member to polynome
+        /// </summary>
+        /// <param name="coe">New member as ComplexNumber</param>
         public void Add(ComplexNumber coe)
         {
             Coeficients.Add(coe);
@@ -44,7 +48,7 @@ namespace Mathematics
         /// <returns>y</returns>
         public ComplexNumber Evaluate(double x)
         {
-            ComplexNumber evaluetedComplexNumber = Evaluate(new ComplexNumber() { Real = x, Imaginari = 0 });
+            ComplexNumber evaluetedComplexNumber = Evaluate(new ComplexNumber() { Real = x, Imaginary = 0 });
             return evaluetedComplexNumber;
         }
 
