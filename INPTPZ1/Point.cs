@@ -5,15 +5,15 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace INPTPZ1 {
-  
+
     class Point {
-        public double x { get; set; }
-        public double y { get; set; }
+        public double X { get; set; }
+        public double Y { get; set; }
 
         public Point() { }
         public Point(double x, double y) {
-            this.x = x;
-            this.y = y;
+            this.X = x;
+            this.Y = y;
         }
     }
 }

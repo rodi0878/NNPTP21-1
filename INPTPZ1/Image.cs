@@ -18,7 +18,7 @@ namespace INPTPZ1 {
                  Color.Red, Color.Blue, Color.Green, Color.Yellow, Color.Orange, Color.Fuchsia, Color.Gold, Color.Cyan, Color.Magenta
             };
 
-        public Image( int height, int width,string filename) {
+        public Image(int height, int width, string filename) {
             this.filename = filename;
             this.height = height;
             this.width = width;
