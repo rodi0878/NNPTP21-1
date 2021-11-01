@@ -35,28 +35,6 @@ namespace Mathematics
             return base.Equals(obj);
         }
         /// <summary>
-        /// Multiply ComplexNumber with another ComplexNumber
-        /// </summary>
-        /// <param name="b">Second ComplexNumber</param>
-        /// <returns>product of multiply two ComplexNumbers</returns>
-        public ComplexNumber Multiply(ComplexNumber b)
-        {
-            ComplexNumber a = this;
-            return new ComplexNumber()
-            {
-                Real = a.Real * b.Real - a.Imaginary * b.Imaginary,
-                Imaginary = (a.Real * b.Imaginary + a.Imaginary * b.Real)
-            };
-        }
-        /// <summary>
-        /// Method to get absolute value of ComplexNumber
-        /// </summary>
-        /// <returns>real number (absolute value)</returns>
-        public double GetAbsoluteValue()
-        {
-            return Math.Sqrt(Real * Real + Imaginary * Imaginary);
-        }
-        /// <summary>
         /// ComplexNumber a + ComplexNumber b
         /// </summary>
         /// <param name="b">ComplexNumber b</param>
@@ -71,14 +49,6 @@ namespace Mathematics
             };
         }
         /// <summary>
-        /// Method get angle from complex number, because divide of Imaginary and Real part is value of tan
-        /// </summary>
-        /// <returns>Angle in rad</returns>
-        public double GetAngleInRadiansFromComplexNumber()
-        {
-            return Math.Atan(Imaginary / Real);
-        }
-        /// <summary>
         /// Method substract ComplexNumber b from actual ComplexNumber
         /// </summary>
         /// <param name="b">ComplexNumber b</param>
@@ -90,6 +60,20 @@ namespace Mathematics
             {
                 Real = a.Real - b.Real,
                 Imaginary = a.Imaginary - b.Imaginary
+            };
+        }
+        /// <summary>
+        /// Multiply ComplexNumber with another ComplexNumber
+        /// </summary>
+        /// <param name="b">Second ComplexNumber</param>
+        /// <returns>product of multiply two ComplexNumbers</returns>
+        public ComplexNumber Multiply(ComplexNumber b)
+        {
+            ComplexNumber a = this;
+            return new ComplexNumber()
+            {
+                Real = a.Real * b.Real - a.Imaginary * b.Imaginary,
+                Imaginary = (a.Real * b.Imaginary + a.Imaginary * b.Real)
             };
         }
         /// <summary>
@@ -108,6 +92,22 @@ namespace Mathematics
                 Imaginary = (dividend.Imaginary / divisor)
             };
         }
+        /// <summary>
+        /// Method to get absolute value of ComplexNumber
+        /// </summary>
+        /// <returns>real number (absolute value)</returns>
+        public double GetAbsoluteValue()
+        {
+            return Math.Sqrt(Real * Real + Imaginary * Imaginary);
+        }
+        /// <summary>
+        /// Method get angle from complex number, because divide of Imaginary and Real part is value of tan
+        /// </summary>
+        /// <returns>Angle in rad</returns>
+        public double GetAngleInRadiansFromComplexNumber()
+        {
+            return Math.Atan(Imaginary / Real);
+        }      
         /// <summary>
         /// Method convert ComplexNumber to string
         /// </summary>

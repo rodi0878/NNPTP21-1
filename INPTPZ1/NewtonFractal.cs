@@ -7,6 +7,8 @@ namespace INPTPZ1
 {
     public class NewtonFractal
     {
+        private const int MAX_ITERATION = 30;
+        private const double TOLERANCE = 0.5;
         private readonly Color[] colors = new Color[]
         {
                 Color.Red, Color.Blue, Color.Green, Color.Yellow, Color.Orange, Color.Fuchsia, Color.Gold, Color.Cyan, Color.Magenta
@@ -27,7 +29,7 @@ namespace INPTPZ1
 
         private Polynome polynome;
         private Polynome derivedPolynome;
-        private ComplexNumber ox;
+        private ComplexNumber complexNumber;
 
         private Bitmap bmpOutput;
 
@@ -100,7 +102,7 @@ namespace INPTPZ1
             if (complexNumber.Real == 0)
                 complexNumber.Real = 0.0001;
             if (complexNumber.Imaginary == 0)
-                complexNumber.Imaginary = 0.0001f;
+                complexNumber.Imaginary = 0.0001;
 
             return complexNumber;
 
@@ -115,13 +117,13 @@ namespace INPTPZ1
                     double y = ymin + i * ystep;
                     double x = xmin + j * xstep;
 
-                    ox = CreateComplexNumberAndEditZeroParams(x, y);
+                    complexNumber = CreateComplexNumberAndEditZeroParams(x, y);
 
                     int it = DoNewtonMethod();
 
-                    int id = FindSolutionRootNumber();
+                    int index = FindSolutionRootNumber();
 
-                    ColorizePixel(id, it, i, j);
+                    ColorizePixel(index, it, i, j);
                 }
             }
         }
@@ -129,12 +131,12 @@ namespace INPTPZ1
         private int DoNewtonMethod()
         {
             int it = 0;
-            for (int i = 0; i < 30; i++)
+            for (int i = 0; i < MAX_ITERATION; i++)
             {
-                var diff = polynome.Evaluate(ox).Divide(derivedPolynome.Evaluate(ox));
-                ox = ox.Subtract(diff);
+                ComplexNumber diff = polynome.Evaluate(complexNumber).Divide(derivedPolynome.Evaluate(complexNumber));
+                complexNumber = complexNumber.Subtract(diff);
 
-                if (Math.Pow(diff.Real, 2) + Math.Pow(diff.Imaginary, 2) >= 0.5)
+                if (Math.Pow(diff.Real, 2) + Math.Pow(diff.Imaginary, 2) >= TOLERANCE)
                 {
                     i--;
                 }
@@ -150,24 +152,25 @@ namespace INPTPZ1
             var index = 0;
             for (int w = 0; w < roots.Count; w++)
             {
-                if (Math.Pow(ox.Real - roots[w].Real, 2) + Math.Pow(ox.Imaginary - roots[w].Imaginary, 2) <= 0.01)
+                if (Math.Pow(complexNumber.Real - roots[w].Real, 2) + Math.Pow(complexNumber.Imaginary - roots[w].Imaginary, 2) <= 0.01)
                 {
                     known = true;
                     index = w;
+                    break;
                 }
             }
             if (!known)
             {
-                roots.Add(ox);
+                roots.Add(complexNumber);
                 index = roots.Count;
             }
 
             return index;
         }
 
-        private void ColorizePixel(int id, int it, int i, int j)
+        private void ColorizePixel(int index, int it, int i, int j)
         {
-            Color colorForPixel = colors[id % colors.Length];
+            Color colorForPixel = colors[index % colors.Length];
             colorForPixel = Color.FromArgb(Math.Min(Math.Max(0, colorForPixel.R - it * 2), 255), Math.Min(Math.Max(0, colorForPixel.G - it * 2), 255), Math.Min(Math.Max(0, colorForPixel.B - it * 2), 255));
             bmpOutput.SetPixel(j, i, colorForPixel);
         }

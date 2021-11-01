@@ -20,10 +20,10 @@ namespace Mathematics
         /// <summary>
         /// Add member to polynome
         /// </summary>
-        /// <param name="coe">New member as ComplexNumber</param>
-        public void Add(ComplexNumber coe)
+        /// <param name="coeficient">New member as ComplexNumber</param>
+        public void Add(ComplexNumber coeficient)
         {
-            Coeficients.Add(coe);
+            Coeficients.Add(coeficient);
         }
 
         /// <summary>
@@ -48,8 +48,7 @@ namespace Mathematics
         /// <returns>y</returns>
         public ComplexNumber Evaluate(double x)
         {
-            ComplexNumber evaluetedComplexNumber = Evaluate(new ComplexNumber() { Real = x, Imaginary = 0 });
-            return evaluetedComplexNumber;
+            return Evaluate(new ComplexNumber() { Real = x, Imaginary = 0 });
         }
 
         /// <summary>
