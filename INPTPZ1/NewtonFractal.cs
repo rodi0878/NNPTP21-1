@@ -11,7 +11,7 @@ namespace INPTPZ1
          {
                 Color.Red, Color.Blue, Color.Green, Color.Yellow, Color.Orange, Color.Fuchsia, Color.Gold, Color.Cyan, Color.Magenta
          };
-        readonly string DEFAULT_FILE_PATH = ".. / .. / .. /out.png";
+        readonly string DEFAULT_FILE_PATH = "..\\..\\..\\out.png";
         string pathToFile;
         int width, height;
         double xmin, ymin, xmax, ymax, xstep, ystep;
@@ -25,26 +25,29 @@ namespace INPTPZ1
             PreparePolynomes();
             PrintPolynomes();
             ColorizeImageOfNewtonFractal();
-            image.Save(pathToFile ?? "../../../out.png");
+            SaveImage();
         }
+
+
+
         private void ParseArguments(string[] arguments)
         {
             int[] intargs = new int[2];
             for (int i = 0; i < intargs.Length; i++)
             {
-                intargs[i] = int.Parse(arguments[i]);
+                intargs[i] = arguments.Length >= 1 ? int.Parse(arguments[i]) : 200;
             }
 
             double[] doubleargs = new double[4];
             for (int i = 0; i < doubleargs.Length; i++)
             {
-                doubleargs[i] = double.Parse(arguments[i + 2]);
+                doubleargs[i] = arguments.Length >= 6 ? double.Parse(arguments[i + 2]) : Math.Pow(-1, i) * 100;
             }
 
             width = intargs[0];
             height = intargs[1];
 
-            pathToFile = arguments[6] ?? DEFAULT_FILE_PATH;
+            pathToFile = arguments.Length < 7 ? DEFAULT_FILE_PATH : arguments[6];
             image = new Bitmap(intargs[0], intargs[1]);
 
             xmin = doubleargs[0];
@@ -151,6 +154,10 @@ namespace INPTPZ1
             colorForPixel = Color.FromArgb(colorForPixel.R, colorForPixel.G, colorForPixel.B);
             colorForPixel = Color.FromArgb(Math.Min(Math.Max(0, colorForPixel.R - (int)it * 2), 255), Math.Min(Math.Max(0, colorForPixel.G - (int)it * 2), 255), Math.Min(Math.Max(0, colorForPixel.B - (int)it * 2), 255));
             image.SetPixel(j, i, colorForPixel);
+        }
+        private void SaveImage()
+        {
+            image.Save(pathToFile);
         }
     }
 }
