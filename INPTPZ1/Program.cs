@@ -14,6 +14,7 @@ namespace INPTPZ1
         static void Main(string[] args)
         {
             NewtonFractal newtonFractal = new NewtonFractal(args);
+        
         }
     }
 
