@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using INPTPZ1.Mathematics;
-
-namespace INPTPZ1
+﻿namespace INPTPZ1
 {
     /// <summary>
     /// This program should produce Newton fractals.
@@ -14,6 +9,7 @@ namespace INPTPZ1
         static void Main(string[] args)
         {
             NewtonFractal newtonFractal = new NewtonFractal(args);
+            newtonFractal.CreateNewtonFractal();
         
         }
     }

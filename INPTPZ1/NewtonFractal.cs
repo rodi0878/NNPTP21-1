@@ -7,28 +7,26 @@ namespace INPTPZ1
 {
     class NewtonFractal
     {
-        readonly Color[] COLORS = new Color[]
-         {
-                Color.Red, Color.Blue, Color.Green, Color.Yellow, Color.Orange, Color.Fuchsia, Color.Gold, Color.Cyan, Color.Magenta
-         };
+        Color[] COLORS;
         readonly string DEFAULT_FILE_PATH = "..\\..\\..\\out.png";
         string pathToFile;
         int width, height;
         double xmin, ymin, xmax, ymax, xstep, ystep;
         Bitmap image;
-        readonly List<ComplexNumber> roots = new List<ComplexNumber>();
+        List<ComplexNumber> roots;
         Polynom basePolynom, derivatedPolynom;
 
         public NewtonFractal(string[] args)
         {
             ParseArguments(args);
+        }
+        public void CreateNewtonFractal()
+        {
             PreparePolynomes();
             PrintPolynomes();
             ColorizeImageOfNewtonFractal();
             SaveImage();
         }
-
-
 
         private void ParseArguments(string[] arguments)
         {
@@ -57,6 +55,13 @@ namespace INPTPZ1
 
             xstep = (xmax - xmin) / intargs[0];
             ystep = (ymax - ymin) / intargs[1];
+
+            roots = new List<ComplexNumber>();
+            
+            COLORS = new Color[]
+            {
+                Color.Red, Color.Blue, Color.Green, Color.Yellow, Color.Orange, Color.Fuchsia, Color.Gold, Color.Cyan, Color.Magenta
+            };
         }
         private void PreparePolynomes()
         {
@@ -85,8 +90,8 @@ namespace INPTPZ1
                     ComplexNumber complexNumber = CreateComplexNumber(y, x);
                     EditZeroPamaetersInComplexNumber(complexNumber);
                     float iteration = FindEquationSolutionWithNewtonsIteration(ref complexNumber);
-                    int id = FindRootNumberSolution(complexNumber);
-                    ColorizeOnePixel(i, j, iteration, id);
+                    int index = FindRootNumberSolution(complexNumber);
+                    ColorizeOnePixel(i, j, iteration, index);
                 }
             }
         }
@@ -111,15 +116,15 @@ namespace INPTPZ1
         }
         private float FindEquationSolutionWithNewtonsIteration(ref ComplexNumber complexNumber)
         {
-            float iteration = 0;
-            for (int q = 0; q < 30; q++)
+            int iteration = 0;
+            for (int i = 0; i < 30; i++)
             {
                 var diff = basePolynom.Evaluate(complexNumber).Divide(derivatedPolynom.Evaluate(complexNumber));
                 complexNumber = complexNumber.Subtract(diff);
 
                 if (Math.Pow(diff.Real, 2) + Math.Pow(diff.Imaginary, 2) >= 0.5)
                 {
-                    q--;
+                    i--;
                 }
                 iteration++;
             }
@@ -130,29 +135,28 @@ namespace INPTPZ1
         private int FindRootNumberSolution(ComplexNumber complexNumber)
         {
             var known = false;
-            var id = 0;
+            var index = 0;
             for (int i = 0; i < roots.Count; i++)
             {
                 if (Math.Pow(complexNumber.Real - roots[i].Real, 2) + Math.Pow(complexNumber.Imaginary - roots[i].Imaginary, 2) <= 0.01)
                 {
                     known = true;
-                    id = i;
+                    index = i;
                 }
             }
             if (!known)
             {
                 roots.Add(complexNumber);
-                id = roots.Count;
+                index = roots.Count;
             }
 
-            return id;
+            return index;
         }
 
-        private void ColorizeOnePixel(int i, int j, float it, int id)
+        private void ColorizeOnePixel(int i, int j, float iteration, int index)
         {
-            var colorForPixel = COLORS[id % COLORS.Length];
-            colorForPixel = Color.FromArgb(colorForPixel.R, colorForPixel.G, colorForPixel.B);
-            colorForPixel = Color.FromArgb(Math.Min(Math.Max(0, colorForPixel.R - (int)it * 2), 255), Math.Min(Math.Max(0, colorForPixel.G - (int)it * 2), 255), Math.Min(Math.Max(0, colorForPixel.B - (int)it * 2), 255));
+            var colorForPixel = COLORS[index % COLORS.Length];
+            colorForPixel = Color.FromArgb(Math.Min(Math.Max(0, colorForPixel.R - (int)iteration * 2), 255), Math.Min(Math.Max(0, colorForPixel.G - (int)iteration * 2), 255), Math.Min(Math.Max(0, colorForPixel.B - (int)iteration * 2), 255));
             image.SetPixel(j, i, colorForPixel);
         }
         private void SaveImage()
