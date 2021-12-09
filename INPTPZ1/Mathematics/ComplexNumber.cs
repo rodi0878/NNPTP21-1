@@ -11,7 +11,7 @@ namespace INPTPZ1.Mathematics
             ImaginaryPart = 0
         };
         public double RealPart { get; set; }
-        public float ImaginaryPart { get; set; }
+        public double ImaginaryPart { get; set; }
 
         public override bool Equals(object obj)
         {
@@ -29,7 +29,7 @@ namespace INPTPZ1.Mathematics
             return new ComplexNumber()
             {
                 RealPart = a.RealPart * b.RealPart - a.ImaginaryPart * b.ImaginaryPart,
-                ImaginaryPart = (float)(a.RealPart * b.ImaginaryPart + a.ImaginaryPart * b.RealPart)
+                ImaginaryPart = a.RealPart * b.ImaginaryPart + a.ImaginaryPart * b.RealPart
             };
         }
         public double GetAbsoluteValue()
@@ -68,13 +68,13 @@ namespace INPTPZ1.Mathematics
 
         internal ComplexNumber Divide(ComplexNumber b)
         {
-            ComplexNumber tmp = this.Multiply(new ComplexNumber() { RealPart = b.RealPart, ImaginaryPart = -b.ImaginaryPart });
-            var tmp2 = b.RealPart * b.RealPart + b.ImaginaryPart * b.ImaginaryPart;
+            ComplexNumber temporaryNumeratorsProduct = this.Multiply(new ComplexNumber() { RealPart = b.RealPart, ImaginaryPart = -b.ImaginaryPart });
+            var temporaryDenominator = b.RealPart * b.RealPart + b.ImaginaryPart * b.ImaginaryPart;
 
             return new ComplexNumber()
             {
-                RealPart = tmp.RealPart / tmp2,
-                ImaginaryPart = (float)(tmp.ImaginaryPart / tmp2)
+                RealPart = temporaryNumeratorsProduct.RealPart / temporaryDenominator,
+                ImaginaryPart = temporaryNumeratorsProduct.ImaginaryPart / temporaryDenominator
             };
         }
     }

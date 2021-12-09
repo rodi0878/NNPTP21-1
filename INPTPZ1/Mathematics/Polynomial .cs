@@ -76,14 +76,12 @@ namespace INPTPZ1.Mathematics
         public override string ToString()
         {
             string polynomAsString = "";
-            int i = 0;
-            for (; i < Coefficients.Count; i++)
+            for (int i = 0; i < Coefficients.Count; i++)
             {
                 polynomAsString += Coefficients[i];
                 if (i > 0)
                 {
-                    int j = 0;
-                    for (; j < i; j++)
+                    for (int j = 0; j < i; j++)
                     {
                         polynomAsString += "x";
                     }
