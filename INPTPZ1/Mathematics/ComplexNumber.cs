@@ -2,8 +2,14 @@
 
 namespace INPTPZ1.Mathematics
 {
-    internal class ComplexNumber
+    public class ComplexNumber
     {
+
+        public readonly static ComplexNumber Zero = new ComplexNumber()
+        {
+            RealPart = 0,
+            ImaginaryPart = 0
+        };
         public double RealPart { get; set; }
         public float ImaginaryPart { get; set; }
 
@@ -11,17 +17,11 @@ namespace INPTPZ1.Mathematics
         {
             if (obj is ComplexNumber)
             {
-                ComplexNumber x = obj as ComplexNumber;
-                return x.RealPart == RealPart && x.ImaginaryPart == ImaginaryPart;
+                ComplexNumber complexNumber = obj as ComplexNumber;
+                return complexNumber.RealPart == RealPart && complexNumber.ImaginaryPart == ImaginaryPart;
             }
             return base.Equals(obj);
         }
-
-        public readonly static ComplexNumber Zero = new ComplexNumber()
-        {
-            RealPart = 0,
-            ImaginaryPart = 0
-        };
 
         public ComplexNumber Multiply(ComplexNumber b)
         {

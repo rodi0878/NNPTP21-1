@@ -3,7 +3,7 @@
 
 namespace INPTPZ1.Mathematics
 {
-    internal class Polynomial
+    public class Polynomial
     {
         private List<ComplexNumber> Coefficients { get; set; }
 
